@@ -1,0 +1,30 @@
+:root{
+  --main-primary-color: #3c6e71;
+  --main-secondary-color: #284b63; 
+  --bw-light-color: #d9d9d9;
+  --bw-dark-color: #353535;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: black !important;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.magicpattern { 
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: repeat;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox=%220 0 1000 1000%22 xmlns=%22http:%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cdefs%3E%3CclipPath id=%22a%22%3E%3Cpath fill=%22currentColor%22 d=%22M778 606.5q15 106.5-103.5 86T453 816.5Q350 961 320.5 806T268 575.5q-23-75.5-56-192t53-229q86-112.5 204-17t191 144Q733 330 748 415t30 191.5Z%22%2F%3E%3C%2FclipPath%3E%3C%2Fdefs%3E%3Cg clip-path=%22url(%23a)%22%3E%3Cpath fill=%22%23444cf7%22 d=%22M778 606.5q15 106.5-103.5 86T453 816.5Q350 961 320.5 806T268 575.5q-23-75.5-56-192t53-229q86-112.5 204-17t191 144Q733 330 748 415t30 191.5Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
