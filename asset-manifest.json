@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/Jaime-Castillo/static/css/main.3e9151de.css",
-    "main.js": "/Jaime-Castillo/static/js/main.0ea11007.js",
+    "main.css": "/Jaime-Castillo/static/css/main.ef583bc2.css",
+    "main.js": "/Jaime-Castillo/static/js/main.09a881de.js",
     "static/js/453.e76fa8c2.chunk.js": "/Jaime-Castillo/static/js/453.e76fa8c2.chunk.js",
     "static/media/Hero-BG.png": "/Jaime-Castillo/static/media/Hero-BG.378391578d437e33ff28.png",
     "static/media/About.jpg": "/Jaime-Castillo/static/media/About.149e6ccc65df7d796aec.jpg",
@@ -10,12 +10,12 @@
     "static/media/PortfolioProjects02.png": "/Jaime-Castillo/static/media/PortfolioProjects02.07b320c1d9bb9cfb50dd.png",
     "static/media/PortfolioProjects01.png": "/Jaime-Castillo/static/media/PortfolioProjects01.760a1b5a7020a0b4106a.png",
     "index.html": "/Jaime-Castillo/index.html",
-    "main.3e9151de.css.map": "/Jaime-Castillo/static/css/main.3e9151de.css.map",
-    "main.0ea11007.js.map": "/Jaime-Castillo/static/js/main.0ea11007.js.map",
+    "main.ef583bc2.css.map": "/Jaime-Castillo/static/css/main.ef583bc2.css.map",
+    "main.09a881de.js.map": "/Jaime-Castillo/static/js/main.09a881de.js.map",
     "453.e76fa8c2.chunk.js.map": "/Jaime-Castillo/static/js/453.e76fa8c2.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.3e9151de.css",
-    "static/js/main.0ea11007.js"
+    "static/css/main.ef583bc2.css",
+    "static/js/main.09a881de.js"
   ]
 }
