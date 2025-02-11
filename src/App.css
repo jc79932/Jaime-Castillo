@@ -104,6 +104,7 @@
 .hero-main {
     background-color: var(--main-primary-color) !important;
     opacity: 0.75;
+    /* color: white !important; */
 }
 
 .hero-main:hover {
@@ -160,10 +161,10 @@
 }
 
 .about-text>div>p:hover {
-    font-size: 1.05rem;
+    transform: scale(1.05);
     color: white;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    /* padding-top: 0.5rem;
+    padding-bottom: 0.5rem; */
 
 }
 
@@ -186,6 +187,9 @@
 
 }
 
+#v-pills-tabContent{
+    transition: all 0.5s ease;
+}
 #v-pills-tabContent::before {
     content: "";
     position: absolute;
@@ -212,6 +216,26 @@
 
 .preview-modal-size .modal-content {
     height: 80vh;
+}
+
+.contact-method{
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    /* z-index: 1; */
+    background: linear-gradient(to bottom right,rgb(15, 15, 15), #000000);
+    border-radius: 10px;
+    border: 1px white solid;
+}
+
+
+.contact-method:hover{
+    transform: scale(1.05);    
+}
+
+#revealContactsButton:hover{
+    background-color: white !important;
+    color: black !important;
 }
 
 .contact-input {
@@ -326,4 +350,9 @@
 .form-text-optional {
     color: rgba(255, 255, 255, 0.5) !important;
     font-weight: lighter;
+}
+
+.submit-button{
+    background-color: var(--main-primary-color) !important;
+
 }

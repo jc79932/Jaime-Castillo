@@ -2,6 +2,7 @@ import { Button, Alert, Card, Navbar, Container, Row, Col, Modal, Form, ButtonGr
 
 import './App.css';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import axios from 'axios'
 import HeroBG from './Hero-BG.png';
 
 import ProjectImage01 from './PortfolioProjects01.png'
@@ -22,7 +23,7 @@ const colorBlack = "#000000"
 
 
 function App() {
-  
+
   useEffect(() => {
     window.scrollTo(0, 0);
     console.log("Scrolling to top.")
@@ -32,22 +33,31 @@ function App() {
   const portfolioRef = useRef(null);
   const contactRef = useRef(null);
 
- 
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [currentSection, setCurrentSection] = useState("homeNav");
+  const [resumeTransition, setResumeTransition] = useState(false);
   const [requestedURL, setRequestedURL] = useState("")
   const [modalPreviewShow, setModalPreviewShow] = React.useState(false);
   const [radioValue, setRadioValue] = useState('0');
+  const [contactInfo, setContactInfo] = useState({
+    phone: "956*******",
+    email: "jc7****@*****.com"
+  })
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [hasAuthenticated, setHasAuthenticated] = useState(false);
+  const [contactPreference, setContactPreference] = useState("Email");
+  const [submitButtonText, setSubmitButtonText] = useState("Submit")
   const viewportHeight = window.innerHeight;
 
 
- 
-  const triggerIsScrollFlip = useCallback(()=>{
+
+  const triggerIsScrollFlip = useCallback(() => {
     console.log("Flip: ", isScrolled, window.scrollY)
-    if (window.scrollY == 0){
+    if (window.scrollY == 0) {
       setTimeout(() => {
         if (isScrolled) {
-          setIsScrolled(false)  
+          setIsScrolled(false)
           setCurrentSection("homeNav")
         }
       }, 10);
@@ -57,7 +67,7 @@ function App() {
     }
   }, [])
 
-  useEffect(()=>{
+  useEffect(() => {
     triggerIsScrollFlip()
   }, [triggerIsScrollFlip])
 
@@ -114,10 +124,10 @@ function App() {
   const runNavAnimation = useCallback(() => {
     setTimeout(() => {
       // isScrolled ? document.getElementById("sideNav").classList.replace("d-none", "d-block") : document.getElementById("sideNav").classList.replace("d-block", "d-none")
-    // isScrolled ? document.getElementById("mainNav").classList.replace("d-flex", "d-none") : document.getElementById("mainNav").classList.replace("d-none", "d-flex")
+      // isScrolled ? document.getElementById("mainNav").classList.replace("d-flex", "d-none") : document.getElementById("mainNav").classList.replace("d-none", "d-flex")
 
     }, 10);
-    
+
     console.log("Running animation: ", isScrolled)
     const homeNav = document.querySelectorAll("#homeNav");
     const aboutNav = document.querySelectorAll("#aboutNav");
@@ -145,7 +155,7 @@ function App() {
       for (let [index, nav] of navArray.entries()) {
         const clonedNav = nav[1].cloneNode(true)
         Object.assign(clonedNav.style, {
-          transition: "all 2s ease",
+          transition: "all 1s ease",
           position: "fixed",
           listStyle: "none",
           top: `${mainNavPosition[index].top}px`,
@@ -169,7 +179,7 @@ function App() {
         clonedNav.addEventListener('transitionend', () => {
           clonedNav.remove();
           document.getElementById("sideNav").style.opacity = "1"
-          document.getElementById("sideNav").classList.replace( "d-none", "d-block")
+          document.getElementById("sideNav").classList.replace("d-none", "d-block")
 
         }, { once: true });
       }
@@ -182,7 +192,7 @@ function App() {
       for (let [index, nav] of navArray.entries()) {
         const clonedNav = nav[0].cloneNode(true)
         Object.assign(clonedNav.style, {
-          transition: "all 2s ease",
+          transition: "all 1s ease",
           position: "fixed",
           listStyle: "none",
           top: `${sideNavPosition[index].top}px`,
@@ -236,6 +246,19 @@ function App() {
     updateCurrentSection()
   }, [updateCurrentSection])
 
+  function processResumeTransition() {
+    setResumeTransition(true);
+    // setTimeout(() => {
+    //   setResumeTransition(false);
+    // }, 100);
+  }
+  useEffect(() => {
+    if (resumeTransition) {
+      setTimeout(() => {
+        setResumeTransition(false)
+      }, 200);
+    }
+  }, [resumeTransition])
   const processRequestedURL = useCallback(() => {
     if (requestedURL != "") {
       console.log("Requested URL: ", requestedURL)
@@ -246,6 +269,148 @@ function App() {
   useEffect(() => {
     processRequestedURL()
   }, [processRequestedURL])
+
+  const processRadioSelection = useCallback(() => {
+    console.log("radioValue: ", radioValue)
+    const emailTextLabelOptional = document.getElementById("formNumberInputText");
+    const phoneTextLabelOptional = document.getElementById("formEmailInputText");
+    switch (radioValue) {
+      case "0":
+        document.getElementById("formNumberRequiredText").classList.add("d-none")
+        emailTextLabelOptional.classList.remove("d-none")
+        phoneTextLabelOptional.classList.add("d-none")
+        break;
+      case "1":
+        document.getElementById("formEmailRequiredText").classList.add("d-none")
+        document.getElementById("formEmailInvalidText").classList.add("d-none")
+        emailTextLabelOptional.classList.add("d-none")
+        phoneTextLabelOptional.classList.remove("d-none")
+        break;
+      case "2":
+        document.getElementById("formEmailRequiredText").classList.add("d-none")
+        document.getElementById("formEmailInvalidText").classList.add("d-none")
+        emailTextLabelOptional.classList.add("d-none")
+        phoneTextLabelOptional.classList.remove("d-none")
+        break;
+      case "3":
+        document.getElementById("formNumberRequiredText").classList.add("d-none")
+        emailTextLabelOptional.classList.add("d-none")
+        phoneTextLabelOptional.classList.add("d-none")
+        break;
+      default:
+        break;
+    }
+  }, [radioValue])
+
+  useEffect(() => {
+    processRadioSelection()
+  }, [processRadioSelection])
+
+  function removeContactErrors() {
+    console.log("Removing contact errors.")
+    const errorTextIds = ["formNameRequiredText", "formEmailRequiredText", "formEmailInvalidText", "formNumberRequiredText", "formNumberInvalidText", "formMessageRequiredText"]
+    for (let errorTextId of errorTextIds) {
+      document.getElementById(errorTextId).classList.add("d-none")
+    }
+  }
+  useEffect(() => {
+    removeContactErrors()
+  }, [])
+  async function evaluateForm(e) {
+    e.preventDefault();
+    removeContactErrors();
+    try {
+      const nameValue = document.getElementById("formName").value
+      const nameRequired = document.getElementById("formNameRequiredText")
+      const emailValue = document.getElementById("formEmail").value
+      const emailRequired = document.getElementById("formEmailRequiredText")
+      const emailInvalid = document.getElementById("formEmailInvalidText")
+      const numberValue = document.getElementById("formNumber").value
+      const numberRequired = document.getElementById("formNumberRequiredText")
+      const numberInvalid = document.getElementById("formNumberInvalidText")
+      const messageValue = document.getElementById("formMessage").value
+      const messageRequired = document.getElementById("formMessageRequiredText")
+      let missingField = false;
+      let invalidField = false;
+
+      const inputValues = [nameValue, emailValue, numberValue, messageValue];
+      if (nameValue == "") {
+        nameRequired.classList.remove("d-none")
+        missingField = true;
+      }
+      if (emailValue == "" && radioValue != "1" && radioValue != "2") {
+        emailRequired.classList.remove("d-none")
+        missingField = true;
+      }
+      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue) == false && emailValue != "") {
+        emailInvalid.classList.remove("d-none")
+        invalidField = true;
+      }
+      if (/^\+?(\d{1,3})?[-. (]?\d{3}[-. )]?\d{3}[-. ]?\d{4}$/.test(numberValue) == false && numberValue != "") {
+        numberInvalid.classList.remove("d-none")
+        invalidField = true;
+      }
+      if (numberValue == "" && radioValue != "0") {
+        numberRequired.classList.remove("d-none")
+        missingField = true;
+      }
+      if (messageValue == "") {
+        messageRequired.classList.remove("d-none")
+        missingField = true;
+      }
+
+      if (invalidField) throw new Error("Invalid input(s) entered.");
+      if (missingField) throw new Error("Missing field(s). Please check to ensure all required inputs have been entered.");
+
+      if (!missingField && !invalidField) {
+        const formData = {
+          name: nameValue,
+          email: emailValue,
+          number: numberValue,
+          contactPreference: radioValue,
+          message: messageValue
+        }
+        setSubmitButtonText("Submitting...")
+        try {
+          console.log("formData: ", formData)
+          const response = await fetch(
+            'https://script.google.com/macros/s/AKfycbzfi8Yg0LSfJUIhFWfgFdYcSxELRPykYIgFXS505iV6tM303EIu1XzNYWJv2MSGObDy_A/exec', 
+            {
+              redirect: "follow",
+              method: 'POST',
+              headers: {
+                'Content-Type': 'text/plain;charset=utf-8',  
+              },
+              body: JSON.stringify(formData), 
+            }
+          );
+      
+          if (!response.ok) {
+            throw new Error('Failed to submit the form');
+          }
+      
+          const responseData = await response.json();
+          console.log(responseData.message);
+          setSubmitButtonText("Submitted successfully!")
+          setTimeout(() => {
+            setSubmitButtonText("Submit")
+          }, 2000);
+        } catch (error) {
+          console.error('Contact form submission failed: ', error);
+          setSubmitButtonText("Error while submitting.")
+          setTimeout(() => {
+            setSubmitButtonText("Submit")
+          }, 2000);
+        } finally {
+          // setLoading(false);
+
+        }
+      }
+    } catch (e) {
+      console.error("Form not submitted.", e)
+    }
+
+  }
   return (
     <div>
       <div id="sideNav" className="d-none">
@@ -312,8 +477,14 @@ function App() {
             <h1 className="display-1 w-100 text-white">Jaime Castillo</h1>
             <h5 className="fst-italic fw-semibold w-100 m-0" style={{ color: colorLightBW }}>Front end web developer | Data analyst</h5>
             <div className="mt-3">
-              <button type="button" className="btn hero-main"><h5 className="m-0 py-1">Contact</h5></button>
-              <button type="button" className="btn hero-secondary" style={{ backgroundColor: "#00000000" }}><h5 className="m-0 py-1 fw-light" style={{ color: colorLightBW }}>Learn More</h5></button>
+              <button type="button" className="btn hero-main" onClick={() => {
+                setCurrentSection("contactNav")
+                window.scrollTo(0, window.scrollY + contactRef.current.getBoundingClientRect().top)
+              }}><h5 className="m-0 py-1" >Contact</h5></button>
+              <button type="button" className="btn hero-secondary" style={{ backgroundColor: "#00000000" }} onClick={() => {
+              setCurrentSection("aboutNav")
+              window.scrollTo(0, window.scrollY + aboutRef.current.getBoundingClientRect().top)
+            }}><h5 className="m-0 py-1 fw-light" style={{ color: colorLightBW }}>Learn More</h5></button>
             </div>
           </div>
         </div>
@@ -337,22 +508,22 @@ function App() {
         </div>
       </Container>
 
-      <Container ref={resumeRef} id="resumeSection" className="px-auto" fluid style={{ backgroundColor: `${colorBlack}`, height: "100vh", width: "calc(90vw - 256px)" }}>
+      <Container ref={resumeRef} id="resumeSection" className="px-auto" fluid style={{ backgroundColor: `${colorBlack}`, minHeight: "100vh", width: "calc(90vw - 256px)" }}>
         <div className="w-100 d-flex flex-column justify-content-center" style={{ height: "11rem" }}>
           <h1 className="display-1 text-white w-100 text-end">Resume</h1>
         </div>
         <div id="resumeContainer" className="h-50 position-relative">
           <div className="d-flex align-items-start">
-            <div className="nav flex-column nav-pills  position-relative mx-5" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <div className="nav flex-column nav-pills  position-relative mx-5" id="v-pills-tab" role="tablist" aria-orientation="vertical" >
 
-              <button className="nav-link active" id="v-pills-verizon-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verizon" type="button" role="tab" aria-controls="v-pills-verizon" aria-selected="true">Verizon</button>
-              <button className="nav-link" id="v-pills-starry-tab" data-bs-toggle="pill" data-bs-target="#v-pills-starry" type="button" role="tab" aria-controls="v-pills-starry" aria-selected="false">Starry, Inc.</button>
-              <button className="nav-link" id="v-pills-apple-tab" data-bs-toggle="pill" data-bs-target="#v-pills-apple" type="button" role="tab" aria-controls="v-pills-apple" aria-selected="false">Apple</button>
-              <button className="nav-link" id="v-pills-frontier-tab" data-bs-toggle="pill" data-bs-target="#v-pills-frontier" type="button" role="tab" aria-controls="v-pills-frontier" aria-selected="false">Frontier <br></br>Communications</button>
-              <button className="nav-link" id="v-pills-whataburger-tab" data-bs-toggle="pill" data-bs-target="#v-pills-whataburger" type="button" role="tab" aria-controls="v-pills-whataburger" aria-selected="false">Whataburger</button>
+              <button onClick={() => { processResumeTransition() }} className="nav-link active" id="v-pills-verizon-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verizon" type="button" role="tab" aria-controls="v-pills-verizon" aria-selected="true">Verizon</button>
+              <button onClick={() => { processResumeTransition() }} className="nav-link" id="v-pills-starry-tab" data-bs-toggle="pill" data-bs-target="#v-pills-starry" type="button" role="tab" aria-controls="v-pills-starry" aria-selected="false">Starry, Inc.</button>
+              <button onClick={() => { processResumeTransition() }} className="nav-link" id="v-pills-apple-tab" data-bs-toggle="pill" data-bs-target="#v-pills-apple" type="button" role="tab" aria-controls="v-pills-apple" aria-selected="false">Apple</button>
+              <button onClick={() => { processResumeTransition() }} className="nav-link" id="v-pills-frontier-tab" data-bs-toggle="pill" data-bs-target="#v-pills-frontier" type="button" role="tab" aria-controls="v-pills-frontier" aria-selected="false">Frontier <br></br>Communications</button>
+              <button onClick={() => { processResumeTransition() }} className="nav-link" id="v-pills-whataburger-tab" data-bs-toggle="pill" data-bs-target="#v-pills-whataburger" type="button" role="tab" aria-controls="v-pills-whataburger" aria-selected="false">Whataburger</button>
 
             </div>
-            <div className="tab-content position-relative" id="v-pills-tabContent">
+            <div className="tab-content position-relative" id="v-pills-tabContent" style={{ opacity: `${resumeTransition ? "0" : "1"}` }}>
               <div className="tab-pane fade show active position-relative" id="v-pills-verizon" role="tabpanel" aria-labelledby="v-pills-verizon-tab">
                 <ResumeContent
                   title={"Data Analyst"}
@@ -492,127 +663,212 @@ This role honed my ability to thrive under pressure, build rapport with diverse 
           />
         </div>
       </Container>
-
       <Container ref={contactRef} id="contactSection" className="px-auto" fluid style={{ backgroundColor: `${colorBlack}`, height: "100vh", width: "calc(90vw - 256px)" }}>
         <div className="w-100 d-flex flex-column justify-content-center" style={{ height: "11rem" }}>
           <h1 className="display-1 text-white w-100 text-end">Contact</h1>
-        </div>
-        <Form>
-          <Form.Group className="mb-3" controlId="formName">
-            <Form.Label className="text-white"><h5>Name</h5></Form.Label>
-            <Form.Control className="contact-input" type="text" placeholder="" />
-          </Form.Group>
+          <h5 className="text-white w-100 text-end fw-light fst-italic">Let's get in touch!</h5>
 
-          <Form.Group className="mb-3" controlId="formContactPreference">
+        </div>
+
+        <div className="w-100 d-flex">
+          <div className="w-50 d-flex justify-content-start flex-column p-5 border-end position-relative" style={{ gap: "1rem", zIndex: "2" }}>
+
+            <div className="w-75 ms-auto d-flex justify-content-start contact-method"
+              onClick={() => {
+                if (hasAuthenticated) {
+                  window.location.href = `mailto:${contactInfo.email}?subject=Contact from Portfolio&body=Hello, I would like to get in touch!`
+                }
+              }}>
+              <div className="rounded-circle bg-white m-3 position-relative d-inline-block" style={{ height: "3rem", width: "3rem" }}>
+                <i className="bi bi-envelope-at-fill position-absolute start-50 top-50 translate-middle" style={{ fontSize: "2rem" }}></i>
+              </div>
+              <div className="h-100 d-inline-block d-flex flex-column justify-content-center">
+                <span className="text-white font-monospace">{contactInfo.email}</span>
+              </div>
+            </div>
+
+            <div className="w-75 ms-auto d-flex justify-content-start contact-method"
+              onClick={() => {
+                if (hasAuthenticated) {
+                  window.location.href = `tel:+1${contactInfo.phone}`
+                }
+              }}>
+              <div className="rounded-circle bg-white m-3 position-relative d-inline-block" style={{ height: "3rem", width: "3rem" }}>
+                <i className="bi bi-telephone-fill position-absolute start-50 top-50 translate-middle" style={{ fontSize: "2rem" }}></i>
+              </div>
+              <div className="h-100 d-inline-block d-flex flex-column justify-content-center">
+                <span className="text-white font-monospace">{contactInfo.phone}</span>
+              </div>
+            </div>
+
+            <div className="w-75 ms-auto d-flex justify-content-start contact-method " onClick={() => { window.open("https://github.com/jc79932", "_blank") }}>
+              <div className="rounded-circle bg-white m-3 position-relative d-inline-block" style={{ height: "3rem", width: "3rem" }}>
+                <i className="bi bi-github position-absolute start-50 top-50 translate-middle" style={{ fontSize: "2rem" }}></i>
+              </div>
+              <div className="h-100 d-inline-block d-flex flex-column justify-content-center">
+                <span className="text-white font-monospace">jc79932</span>
+              </div>
+            </div>
+            <button type="button" className={`btn text-white w-75 ms-auto fw-semibold ${hasAuthenticated ? "d-none" : ""}`} id="revealContactsButton" style={{ backgroundColor: `${colorPrimary}` }} onClick={async () => {
+              setIsAuthenticating(true)
+              try {
+                const response = await axios.get('https://script.google.com/macros/s/AKfycbzBWtH3t5Euc_zFT8pwtpR2-Dq9lSt27OkyB0W3tTI_m0eK8gXhkLEQZqE7VMtwnK60/exec', {
+                  params: { apiKey: 'JC00001' }
+                });
+                setContactInfo(response.data);
+              } catch (error) {
+                console.error("Error fetching contact info:", error);
+              } finally {
+                setHasAuthenticated(true)
+              }
+            }}>{isAuthenticating ?
+              <>
+                Authenticating...
+                <div className="spinner-border spinner-border-sm ms-1" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+
+              </>
+              : "Click to reveal"}  </button>
+          </div>
+          <Form className="w-50 p-5">
+            <Form.Group className="mb-3" controlId="formName">
+              <Form.Label className="text-white"><h5>Name</h5></Form.Label>
+              <Form.Control className="contact-input" type="text" placeholder="" />
+              <Form.Text id="formNameRequiredText" className="fst-italic fw-light text-danger">
+                * Required
+              </Form.Text>
+            </Form.Group>
+
+
             <Row>
               <Col>
-                <Form.Label className="text-white"><h5>Email Address</h5></Form.Label>
-                <Form.Control className="contact-input" type="email" placeholder="" />
-                <Form.Text id="formEmailInputText" className="fst-italic form-text-optional d-none">
-                  (Optional)
-                </Form.Text>
+                <Form.Group className="mb-3" controlId="formEmail">
+                  <Form.Label className="text-white"><h5>Email Address</h5></Form.Label>
+                  <Form.Control className="contact-input" type="email" placeholder="" />
+                  <Form.Text id="formEmailInputText" className="fst-italic form-text-optional">
+                    (Optional)
+                  </Form.Text>
+                  <Form.Text id="formEmailRequiredText" className="fst-italic fw-light text-danger">
+                    * Required
+                  </Form.Text>
+                  <Form.Text id="formEmailInvalidText" className="fst-italic fw-light text-danger">
+                    * Invalid Email
+                  </Form.Text>
+                </Form.Group>
               </Col>
               <Col>
-                <Form.Label className="text-white"><h5>Phone Number</h5></Form.Label>
-                <Form.Control className="contact-input" type="tel" placeholder="" />
-                <Form.Text id="formPhoneInputText" className="fst-italic form-text-optional">
-                  (Optional)
-                </Form.Text>
+                <Form.Group className="mb-3" controlId="formNumber">
+
+                  <Form.Label className="text-white"><h5>Phone Number</h5></Form.Label>
+                  <Form.Control className="contact-input" type="tel" placeholder="" />
+                  <Form.Text id="formNumberInputText" className="fst-italic form-text-optional">
+                    (Optional)
+                  </Form.Text>
+                  <Form.Text id="formNumberRequiredText" className="fst-italic fw-light text-danger">
+                    * Required
+                  </Form.Text>
+                  <Form.Text id="formNumberInvalidText" className="fst-italic fw-light text-danger">
+                    * Invalid Phone Number
+                  </Form.Text>
+                </Form.Group>
               </Col>
             </Row>
-          </Form.Group>
 
-          <Form.Group className="mb-3" controlId="formRadioSection">
-            <Form.Label className="text-white"><h5>Contact preference</h5></Form.Label>
-            <div className="d-none">
-              <Form.Check
-                className="text-white"
-                inline
-                label="Email"
-                name="radioPreference"
-                type="radio"
-                id="preferenceEmail"
-              />
-              <Form.Check
-                className="text-white"
-                inline
-                label="Call"
-                name="radioPreference"
-                type="radio"
-                id="preferenceCall"
-              />
-              <Form.Check
-                className="text-white"
-                inline
-                label="Text"
-                name="radioPreference"
-                type="radio"
-                id="preferenceText"
-              />
-              <Form.Check
-                className="text-white"
-                inline
-                label="Any"
-                name="radioPreference"
-                type="radio"
-                id="preferenceAny"
-              />
-            </div>
-            <br></br>
-            <ButtonGroup style={{ borderRadius: "10px" }} className="mb-2 preference-group">
-              <ToggleButton
-                className={radioValue === "0" ? "preference-radio-selected-first" : "preference-radio-unselected-first"}
-                key="preferenceEmail"
-                id="radioEmail"
-                type="radio"
-                name="Email"
-                value="0"
-                checked={radioValue === "0"}
-                onChange={(e) => setRadioValue(e.currentTarget.value)}>Email</ToggleButton>
+            <Form.Group className="mb-3" controlId="formRadioSection">
+              <Form.Label className="text-white"><h5>Contact preference</h5></Form.Label>
+              <div className="d-none">
+                <Form.Check
+                  className="text-white"
+                  inline
+                  label="Email"
+                  name="radioPreference"
+                  type="radio"
+                  id="preferenceEmail"
+                />
+                <Form.Check
+                  className="text-white"
+                  inline
+                  label="Call"
+                  name="radioPreference"
+                  type="radio"
+                  id="preferenceCall"
+                />
+                <Form.Check
+                  className="text-white"
+                  inline
+                  label="Text"
+                  name="radioPreference"
+                  type="radio"
+                  id="preferenceText"
+                />
+                <Form.Check
+                  className="text-white"
+                  inline
+                  label="Any"
+                  name="radioPreference"
+                  type="radio"
+                  id="preferenceAny"
+                />
+              </div>
+              <br></br>
+              <ButtonGroup style={{ borderRadius: "10px" }} className="mb-2 preference-group">
+                <ToggleButton
+                  className={radioValue === "0" ? "preference-radio-selected-first" : "preference-radio-unselected-first"}
+                  key="preferenceEmail"
+                  id="radioEmail"
+                  type="radio"
+                  name="Email"
+                  value="0"
+                  checked={radioValue === "0"}
+                  onChange={(e) => setRadioValue(e.currentTarget.value)}>Email</ToggleButton>
 
-              <ToggleButton
-                className={radioValue === "1" ? "preference-radio-selected" : "preference-radio-unselected"}
-                key="preferenceCall"
-                id="radioCall"
-                type="radio"
-                name="Call"
-                value="1"
-                checked={radioValue === "1"}
-                onChange={(e) => setRadioValue(e.currentTarget.value)}>Call</ToggleButton>
-              <ToggleButton
-                className={radioValue === "2" ? "preference-radio-selected" : "preference-radio-unselected"}
-                key="preferenceText"
-                id="radioText"
-                type="radio"
-                name="Text"
-                value="2"
-                checked={radioValue === "2"}
-                onChange={(e) => setRadioValue(e.currentTarget.value)}>Text</ToggleButton>
-              <ToggleButton
-                className={radioValue === "3" ? "preference-radio-selected-last" : "preference-radio-unselected-last"}
-                key="preferenceAny"
-                id="radioAny"
-                type="radio"
-                name="Any"
-                value="3"
-                checked={radioValue === "3"}
-                onChange={(e) => setRadioValue(e.currentTarget.value)}>Any</ToggleButton>
-            </ButtonGroup>
-          </Form.Group>
+                <ToggleButton
+                  className={radioValue === "1" ? "preference-radio-selected" : "preference-radio-unselected"}
+                  key="preferenceCall"
+                  id="radioCall"
+                  type="radio"
+                  name="Call"
+                  value="1"
+                  checked={radioValue === "1"}
+                  onChange={(e) => setRadioValue(e.currentTarget.value)}>Call</ToggleButton>
+                <ToggleButton
+                  className={radioValue === "2" ? "preference-radio-selected" : "preference-radio-unselected"}
+                  key="preferenceText"
+                  id="radioText"
+                  type="radio"
+                  name="Text"
+                  value="2"
+                  checked={radioValue === "2"}
+                  onChange={(e) => setRadioValue(e.currentTarget.value)}>Text</ToggleButton>
+                <ToggleButton
+                  className={radioValue === "3" ? "preference-radio-selected-last" : "preference-radio-unselected-last"}
+                  key="preferenceAny"
+                  id="radioAny"
+                  type="radio"
+                  name="Any"
+                  value="3"
+                  checked={radioValue === "3"}
+                  onChange={(e) => setRadioValue(e.currentTarget.value)}>Any</ToggleButton>
+              </ButtonGroup>
+            </Form.Group>
 
-          <Form.Group className="mb-3" controlId="formMessage">
-            <Form.Label className="text-white"><h5>Message</h5></Form.Label>
-            <Form.Control className="contact-input" as="textarea" rows={3} style={{ resize: "none" }} />
-          </Form.Group>
+            <Form.Group className="mb-3" controlId="formMessage">
+              <Form.Label className="text-white"><h5>Message</h5></Form.Label>
+              <Form.Control className="contact-input" as="textarea" rows={3} style={{ resize: "none" }} />
+              <Form.Text id="formMessageRequiredText" className="fst-italic fw-light text-danger">
+                * Required
+              </Form.Text>
+            </Form.Group>
 
-          <Button style={{ backgroundColor: colorPrimary, border: "none", float: "right" }} type="submit">
-            Submit
-          </Button>
-        </Form>
-        <div className="w-100 d-flex justify-content-center py-5 my-3">
-          <button type="button" className="btn rounded-circle position-relative" style={{backgroundColor: colorPrimary, width: "3rem", height: "3rem"}}><i className="text-white bi bi-github position-absolute top-50 start-50 translate-middle" style={{fontSize: "2rem"}}></i></button>
-          <button type="button" className="btn"></button>
-          <button type="button" className="btn"></button>
+            <Button id="contactFormSubmit" style={{ backgroundColor: `${submitButtonText == "Submit" ? colorPrimary : ""}`, border: "none", float: "right" }} className={`btn ${submitButtonText == "Error while submitting." ? "btn-danger" : submitButtonText == "Submitted successfully!" ? "btn-success" : "submit-button"}`} type="submit" onClick={(e) => evaluateForm(e)}>
+              {submitButtonText}
+              <div className={`spinner-border spinner-border-sm ms-1 ${submitButtonText == "Submitting..." ? "" : "d-none"}`} role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </Button>
+          </Form>
+
         </div>
       </Container>
 
@@ -639,6 +895,9 @@ This role honed my ability to thrive under pressure, build rapport with diverse 
         </Modal.Footer>
       </Modal>
 
+      <footer>
+        <p className="small text-center" >©2025 Jaime Castillo. All rights reserved.</p>
+      </footer>
     </div>
   );
 }

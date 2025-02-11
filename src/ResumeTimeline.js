@@ -4,7 +4,7 @@ import React, { useState } from "react";
 const colorPrimary = "#3c6e71";
 const colorSecondary = "#284b63";
 
-const resumeURL = "https://profile-file-service-temp-prod.s3.us-west-2.amazonaws.com/475624197_b1ab8376-ecbc-4bd7-a59a-c92a05849b30?response-content-disposition=attachment%3Bfilename%3DJaime-Castillo.pdf&response-content-type=application%2Fpdf&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250206T191049Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAZKXXDXTXZF2KYWCD%2F20250206%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Expires=300&X-Amz-Signature=555b0de5c7eb0d0d6a5dd91c160576cf58989d6a9226fa280ece9c3a95670759"
+const resumeURL = "https://drive.google.com/uc?export=download&id=1Op1Xvh2Q-sIWdV8W860-jBSSjft-fEcN"
 export default function ResumeContent({ title, location, duration, description, rod, subcontractor }) {
     const [isHovered, setIsHovered] = useState(false);
 
