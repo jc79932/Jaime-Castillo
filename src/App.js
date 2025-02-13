@@ -3,7 +3,7 @@ import { Button, Alert, Card, Navbar, Container, Row, Col, Modal, Form, ButtonGr
 import './App.css';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import axios from 'axios'
-import HeroBG from './Hero-BG.png';
+import HeroBG from './Hero-BG.jpg';
 
 import ProjectImage01 from './PortfolioProjects01.png'
 import ProjectImage02 from './PortfolioProjects02.png'
@@ -26,16 +26,19 @@ function App() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    console.log("Scrolling to top.")
+    // console.log("Scrolling to top.")
   }, []);
   const aboutRef = useRef(null);
   const resumeRef = useRef(null);
   const portfolioRef = useRef(null);
   const contactRef = useRef(null);
+  const navItemsRef = useRef([]);
 
-
+  const [topNavStatus, toggleTopNavStatus] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [currentSection, setCurrentSection] = useState("homeNav");
+  const [activeResumeTab, setActiveResumeTab] = useState('v-pills-verizon');
+
   const [resumeTransition, setResumeTransition] = useState(false);
   const [requestedURL, setRequestedURL] = useState("")
   const [modalPreviewShow, setModalPreviewShow] = React.useState(false);
@@ -50,10 +53,12 @@ function App() {
   const [submitButtonText, setSubmitButtonText] = useState("Submit")
   const viewportHeight = window.innerHeight;
 
-
+  function toggleTopNav() {
+    console.log("topNavStatus: ", topNavStatus);
+  }
 
   const triggerIsScrollFlip = useCallback(() => {
-    console.log("Flip: ", isScrolled, window.scrollY)
+    // console.log("Flip: ", isScrolled, window.scrollY)
     if (window.scrollY == 0) {
       setTimeout(() => {
         if (isScrolled) {
@@ -80,12 +85,12 @@ function App() {
       const contactPositionY = contactRef.current ? contactRef.current.getBoundingClientRect().top : 0
 
       // FOR DEBUG
-      console.log(scrollY, isScrolled, aboutPositionY, resumePositionY, currentSection)
+      // console.log(scrollY, isScrolled, aboutPositionY, resumePositionY, currentSection)
 
       if (scrollY >= 0 && scrollY <= 100) {
         if (currentSection != "homeNav") {
           setCurrentSection("homeNav")
-          console.log("Setting homeNav")
+          // console.log("Setting homeNav")
         }
       } else if (Math.abs(aboutPositionY) >= 0 && Math.abs(aboutPositionY) <= 100) {
         if (currentSection != "aboutNav") setCurrentSection("aboutNav")
@@ -99,11 +104,11 @@ function App() {
 
       if (scrollY > 1 && !isScrolled) {
         setIsScrolled(true);
-        console.log("setIsScrolled set to true")
+        // console.log("setIsScrolled set to true")
         // document.getElementById("sideNav").classList.replace("d-none", "d-block")
       } else if (scrollY === 0 && isScrolled) {
         setIsScrolled(false);
-        console.log("setIsScrolled set to false")
+        // console.log("setIsScrolled set to false")
         // document.getElementById("sideNav").classList.replace("d-block", "d-none")
       }
       // triggerIsScrollFlip()
@@ -128,101 +133,187 @@ function App() {
 
     }, 10);
 
-    console.log("Running animation: ", isScrolled)
-    const homeNav = document.querySelectorAll("#homeNav");
-    const aboutNav = document.querySelectorAll("#aboutNav");
-    const resumeNav = document.querySelectorAll("#resumeNav");
-    const portfolioNav = document.querySelectorAll("#portfolioNav");
-    const contactNav = document.querySelectorAll("#contactNav");
-    const navArray = [homeNav, aboutNav, resumeNav, portfolioNav, contactNav];
-
-    if (isScrolled == false && mainNavPosition == null) {
-      const mappedNavArray = navArray.map(nav => nav[1].getBoundingClientRect())
-      setMainNavPosition(mappedNavArray)
-    } else if (isScrolled && sideNavPosition == null) {
-      document.getElementById("sideNav").classList.replace("d-none", "d-block")
-      document.getElementById("sideNav").style.opacity = "0"
-      const mappedNavArray = navArray.map(nav => nav[0].getBoundingClientRect())
-      setSideNavPosition(mappedNavArray)
-    }
-
-    if (isScrolled) {
-      document.getElementById("sideNav").style.opacity = "0"
-      document.getElementById("mainNav").style.opacity = "0"
-      document.getElementById("sideNav").classList.replace("d-none", "d-block")
-
-      document.querySelectorAll("#tempNav").forEach(tempNav => tempNav.remove())
-      for (let [index, nav] of navArray.entries()) {
-        const clonedNav = nav[1].cloneNode(true)
-        Object.assign(clonedNav.style, {
-          transition: "all 1s ease",
-          position: "fixed",
-          listStyle: "none",
-          top: `${mainNavPosition[index].top}px`,
-          left: `${mainNavPosition[index].left}px`,
-          padding: "1rem",
-          zIndex: "999",
-        });
-        Object.assign(clonedNav.firstChild.style, {
-          padding: "1rem",
-          textDecoration: "none",
-          color: "white",
-        });
-        clonedNav.id = "tempNav"
-        document.body.appendChild(clonedNav)
-
+    if (window.innerWidth > 575 && window.innerWidth < 991) {
+      if (isScrolled) {
+        document.getElementById("mainNav").classList.add("tablet-anim")
         setTimeout(() => {
-          clonedNav.style.top = `${nav[0].getBoundingClientRect().top}px`
-          clonedNav.style.left = `${nav[0].getBoundingClientRect().left}px`
-        }, 10);
-
-        clonedNav.addEventListener('transitionend', () => {
-          clonedNav.remove();
-          document.getElementById("sideNav").style.opacity = "1"
-          document.getElementById("sideNav").classList.replace("d-none", "d-block")
-
-        }, { once: true });
-      }
-    } else if (sideNavPosition != null && isScrolled == false) {
-      document.getElementById("mainNav").style.opacity = "0"
-      document.getElementById("sideNav").style.opacity = "0"
-      document.getElementById("sideNav").classList.replace("d-none", "d-block")
-
-      document.querySelectorAll("#tempNav").forEach(tempNav => tempNav.remove())
-      for (let [index, nav] of navArray.entries()) {
-        const clonedNav = nav[0].cloneNode(true)
-        Object.assign(clonedNav.style, {
-          transition: "all 1s ease",
-          position: "fixed",
-          listStyle: "none",
-          top: `${sideNavPosition[index].top}px`,
-          left: `${sideNavPosition[index].left}px`,
-          padding: "1rem",
-          zIndex: "999",
-        });
-        Object.assign(clonedNav.firstChild.style, {
-          padding: "1rem",
-          textDecoration: "none",
-          color: "white",
-        });
-        clonedNav.id = "tempNav"
-        document.body.appendChild(clonedNav)
-
+          document.getElementById("topNavToggle").classList.replace("topNavToggle-initial-pos", "topNavToggle-scrolled-pos")
+        }, 500);
+      } else {
+        toggleTopNavStatus(false);
+        document.getElementById("topNavToggle").classList.replace("topNavToggle-scrolled-pos", "topNavToggle-initial-pos")
         setTimeout(() => {
-          clonedNav.style.top = `${nav[1].getBoundingClientRect().top}px`
-          clonedNav.style.left = `${nav[1].getBoundingClientRect().left}px`
-        }, 10);
-
-        clonedNav.addEventListener('transitionend', () => {
-          clonedNav.remove();
-          document.getElementById("mainNav").style.opacity = "1"
-          document.getElementById("sideNav").classList.replace("d-block", "d-none")
-        }, { once: true });
+          document.getElementById("mainNav").classList.remove("tablet-anim")
+        }, 500);
       }
     }
 
+    if (window.innerWidth > 991) {
+      // console.log(window.innerWidth)
+      // console.log("Running animation: ", isScrolled)
+
+      const mainLiElements = document.getElementById("mainNav")?.querySelector("ul")?.querySelectorAll("li");
+      document.getElementById("sideNav").classList.add("sideNav-initial-pos")
+
+      if (isScrolled) {
+        document.getElementById("mainNav").style.opacity = "0";
+        document.querySelectorAll("#tempNav").forEach(tempNav => tempNav.remove())
+        // console.log("navItemsRef:", navItemsRef[0].getBoundingClientRect().top)
+        // console.log("mainLiElements: ", mainLiElements);
+        for (let [index, li] of mainLiElements.entries()) {
+          const clonedLi = li.cloneNode(true);
+          Object.assign(clonedLi.style, {
+            transition: "all 1s ease",
+            position: "fixed",
+            listStyle: "none",
+            top: `${li.getBoundingClientRect().top}px`,
+            left: `${li.getBoundingClientRect().left}px`,
+            padding: "1rem",
+            zIndex: "999",
+          });
+          Object.assign(clonedLi.firstChild.style, {
+            padding: "1rem",
+            textDecoration: "none",
+            color: "white",
+            fontWeight: "bold",
+          });
+          clonedLi.id = "tempNav"
+          document.body.appendChild(clonedLi)
+          setTimeout(() => {
+            clonedLi.style.top = `${navItemsRef[index].getBoundingClientRect().top}px`
+            clonedLi.style.left = `${navItemsRef[index].getBoundingClientRect().left}px`
+          }, 10);
+
+          clonedLi.addEventListener('transitionend', () => {
+            clonedLi.remove();
+            if (window.scrollY != 0) document.getElementById("sideNav").classList.remove("sideNav-initial-pos")
+
+          }, { once: true });
+        }
+
+      } else if (isScrolled == false) {
+        document.querySelectorAll("#tempNav").forEach(tempNav => tempNav.remove())
+        document.getElementById("mainNav").style.opacity = "0";
+        document.querySelectorAll("#tempNav").forEach(tempNav => tempNav.remove())
+        // console.log("navItemsRef:", navItemsRef[0].getBoundingClientRect().top)
+        // console.log("mainLiElements: ", mainLiElements);
+        for (let [index, li] of mainLiElements.entries()) {
+          const clonedLi = li.cloneNode(true);
+          Object.assign(clonedLi.style, {
+            transition: "all 1s ease",
+            position: "fixed",
+            listStyle: "none",
+            top: `${navItemsRef[index].getBoundingClientRect().top}px`,
+            left: `${navItemsRef[index].getBoundingClientRect().left}px`,
+            padding: "1rem",
+            zIndex: "999",
+          });
+          Object.assign(clonedLi.firstChild.style, {
+            padding: "1rem",
+            textDecoration: "none",
+            color: "white",
+            fontWeight: "bold",
+          });
+          clonedLi.id = "tempNav"
+          document.body.appendChild(clonedLi)
+          setTimeout(() => {
+            clonedLi.style.top = `${li.getBoundingClientRect().top}px`
+            clonedLi.style.left = `${li.getBoundingClientRect().left}px`
+          }, 10);
+
+          clonedLi.addEventListener('transitionend', () => {
+            clonedLi.remove();
+            if (window.scrollY != 0) document.getElementById("sideNav").classList.add("sideNav-initial-pos")
+            document.getElementById("mainNav").style.opacity = "1";
+
+          }, { once: true });
+
+          document.getElementById("sideNav").classList.add("sideNav-initial-pos")
+        }
+      }
+
+      if (false) {
+
+        // if (isScrolled) {
+        //   if (mainNavPosition == null) return
+        //   document.getElementById("sideNav").style.opacity = "0"
+        //   document.getElementById("mainNav").style.opacity = "0"
+        //   document.getElementById("sideNav").classList.replace("d-none", "d-block")
+
+        //   document.querySelectorAll("#tempNav").forEach(tempNav => tempNav.remove())
+        //   for (let [index, nav] of navArray.entries()) {
+        //     const clonedNav = nav[1].cloneNode(true)
+        //     Object.assign(clonedNav.style, {
+        //       transition: "all 1s ease",
+        //       position: "fixed",
+        //       listStyle: "none",
+        //       top: `${mainNavPosition[index].top}px`,
+        //       left: `${mainNavPosition[index].left}px`,
+        //       padding: "1rem",
+        //       zIndex: "999",
+        //     });
+        //     Object.assign(clonedNav.firstChild.style, {
+        //       padding: "1rem",
+        //       textDecoration: "none",
+        //       color: "white",
+        //     });
+        //     clonedNav.id = "tempNav"
+        //     document.body.appendChild(clonedNav)
+
+        //     setTimeout(() => {
+        //       clonedNav.style.top = `${nav[0].getBoundingClientRect().top}px`
+        //       clonedNav.style.left = `${nav[0].getBoundingClientRect().left}px`
+        //     }, 10);
+
+        //     clonedNav.addEventListener('transitionend', () => {
+        //       clonedNav.remove();
+        //       document.getElementById("sideNav").style.opacity = "1"
+        //       document.getElementById("sideNav").classList.replace("d-none", "d-block")
+
+        //     }, { once: true });
+        //   }
+        // } else if (sideNavPosition != null && isScrolled == false) {
+        //   document.getElementById("mainNav").style.opacity = "0"
+        //   document.getElementById("sideNav").style.opacity = "0"
+        //   document.getElementById("sideNav").classList.replace("d-none", "d-block")
+
+        //   document.querySelectorAll("#tempNav").forEach(tempNav => tempNav.remove())
+        //   for (let [index, nav] of navArray.entries()) {
+        //     const clonedNav = nav[0].cloneNode(true)
+        //     Object.assign(clonedNav.style, {
+        //       transition: "all 1s ease",
+        //       position: "fixed",
+        //       listStyle: "none",
+        //       top: `${sideNavPosition[index].top}px`,
+        //       left: `${sideNavPosition[index].left}px`,
+        //       padding: "1rem",
+        //       zIndex: "999",
+        //     });
+        //     Object.assign(clonedNav.firstChild.style, {
+        //       padding: "1rem",
+        //       textDecoration: "none",
+        //       color: "white",
+        //     });
+        //     clonedNav.id = "tempNav"
+        //     document.body.appendChild(clonedNav)
+
+        //     setTimeout(() => {
+        //       clonedNav.style.top = `${nav[1].getBoundingClientRect().top}px`
+        //       clonedNav.style.left = `${nav[1].getBoundingClientRect().left}px`
+        //     }, 10);
+
+        //     clonedNav.addEventListener('transitionend', () => {
+        //       clonedNav.remove();
+        //       document.getElementById("mainNav").style.opacity = "1"
+        //       document.getElementById("sideNav").classList.replace("d-block", "d-none")
+        //     }, { once: true });
+        //   }
+        // }
+
+      }
+
+    }
     // TO DEBUG: 
-    console.log([homeNav[1].getBoundingClientRect(), mainNavPosition, sideNavPosition, homeNav[0].getBoundingClientRect()])
 
 
   }, [isScrolled])
@@ -232,7 +323,7 @@ function App() {
   }, [runNavAnimation])
 
   const updateCurrentSection = useCallback(() => {
-    console.log("currentSection: ", currentSection)
+    // console.log("currentSection: ", currentSection)
     const selectedSection = `#${currentSection}`
     document.querySelectorAll(".selected-nav-li").forEach(selectedNav => {
       if (selectedNav.id !== "tempNav") {
@@ -259,6 +350,12 @@ function App() {
       }, 200);
     }
   }, [resumeTransition])
+
+  const handleResumeTabClick = (tabId) => {
+    setActiveResumeTab(tabId);
+    processResumeTransition();
+  };
+
   const processRequestedURL = useCallback(() => {
     if (requestedURL != "") {
       console.log("Requested URL: ", requestedURL)
@@ -271,7 +368,7 @@ function App() {
   }, [processRequestedURL])
 
   const processRadioSelection = useCallback(() => {
-    console.log("radioValue: ", radioValue)
+    // console.log("radioValue: ", radioValue)
     const emailTextLabelOptional = document.getElementById("formNumberInputText");
     const phoneTextLabelOptional = document.getElementById("formEmailInputText");
     switch (radioValue) {
@@ -374,21 +471,21 @@ function App() {
         try {
           console.log("formData: ", formData)
           const response = await fetch(
-            'https://script.google.com/macros/s/AKfycbzfi8Yg0LSfJUIhFWfgFdYcSxELRPykYIgFXS505iV6tM303EIu1XzNYWJv2MSGObDy_A/exec', 
+            'https://script.google.com/macros/s/AKfycbzfi8Yg0LSfJUIhFWfgFdYcSxELRPykYIgFXS505iV6tM303EIu1XzNYWJv2MSGObDy_A/exec',
             {
               redirect: "follow",
               method: 'POST',
               headers: {
-                'Content-Type': 'text/plain;charset=utf-8',  
+                'Content-Type': 'text/plain;charset=utf-8',
               },
-              body: JSON.stringify(formData), 
+              body: JSON.stringify(formData),
             }
           );
-      
+
           if (!response.ok) {
             throw new Error('Failed to submit the form');
           }
-      
+
           const responseData = await response.json();
           console.log(responseData.message);
           setSubmitButtonText("Submitted successfully!")
@@ -413,25 +510,57 @@ function App() {
   }
   return (
     <div>
-      <div id="sideNav" className="d-none">
-        <ul className="d-flex flex-column p-0 align-items-center mx-0 my-auto h-75 justify-content-evenly" id="navStyle">
+      <button id="topNavToggle" onClick={() => { toggleTopNavStatus(true) }} type="button" className="d-block d-lg-none position-fixed btn top-0 start-0 topNavToggle-initial-pos" style={{ margin: "32px 32px", height: "fit-content", width: "fit-content", zIndex: "999" }}><i className="bi bi-list fs-5"></i></button>
+      <div id="topNav" className="d-block d-lg-none " style={{ top: `${topNavStatus ? "0" : "-200dvh"}` }}>
+        <button id="topNavClose" onClick={() => { toggleTopNavStatus(false) }} type="button" className="d-block d-lg-none position-absolute btn top-0 start-0" style={{ height: "fit-content", width: "fit-content", zIndex: "999" }}><i className="bi bi-x"></i></button>
+        <ul className="d-flex flex-column p-0 align-items-center mx-0 h-75 justify-content-evenly" id="navStyle">
           <li onClick={() => {
             setCurrentSection("homeNav")
             window.scrollTo(0, 0)
+            toggleTopNavStatus(false)
           }} id="homeNav"><a href="#" onClick={(e) => { e.preventDefault() }}>Home</a></li>
           <li onClick={() => {
             setCurrentSection("aboutNav")
             window.scrollTo(0, window.scrollY + aboutRef.current.getBoundingClientRect().top)
+            toggleTopNavStatus(false)
           }} id="aboutNav"><a href="#" onClick={(e) => { e.preventDefault() }}>About</a></li>
           <li onClick={() => {
             setCurrentSection("resumeNav")
             window.scrollTo(0, window.scrollY + resumeRef.current.getBoundingClientRect().top)
+            toggleTopNavStatus(false)
           }} id="resumeNav"><a href="#" onClick={(e) => { e.preventDefault() }}>Resume</a></li>
           <li onClick={() => {
             setCurrentSection("portfolioNav")
             window.scrollTo(0, window.scrollY + portfolioRef.current.getBoundingClientRect().top)
+            toggleTopNavStatus(false)
           }} id="portfolioNav"><a href="#" onClick={(e) => { e.preventDefault() }}>Portfolio</a></li>
           <li onClick={() => {
+            setCurrentSection("contactNav")
+            window.scrollTo(0, window.scrollY + contactRef.current.getBoundingClientRect().top)
+            toggleTopNavStatus(false)
+          }} id="contactNav"><a href="#" onClick={(e) => { e.preventDefault() }}>Contact</a></li>
+        </ul>
+
+      </div>
+      <div id="sideNav" className="position-fixed sideNav-initial-pos d-none d-lg-block">
+        <ul className="sideNav-pos" id="navStyle">
+          <li ref={(li) => navItemsRef[0] = li} onClick={() => {
+            setCurrentSection("homeNav")
+            window.scrollTo(0, 0)
+          }} id="homeNav"><a href="#" onClick={(e) => { e.preventDefault() }}>Home</a></li>
+          <li ref={(li) => navItemsRef[1] = li} onClick={() => {
+            setCurrentSection("aboutNav")
+            window.scrollTo(0, window.scrollY + aboutRef.current.getBoundingClientRect().top)
+          }} id="aboutNav"><a href="#" onClick={(e) => { e.preventDefault() }}>About</a></li>
+          <li ref={(li) => navItemsRef[2] = li} onClick={() => {
+            setCurrentSection("resumeNav")
+            window.scrollTo(0, window.scrollY + resumeRef.current.getBoundingClientRect().top)
+          }} id="resumeNav"><a href="#" onClick={(e) => { e.preventDefault() }}>Resume</a></li>
+          <li ref={(li) => navItemsRef[3] = li} onClick={() => {
+            setCurrentSection("portfolioNav")
+            window.scrollTo(0, window.scrollY + portfolioRef.current.getBoundingClientRect().top)
+          }} id="portfolioNav"><a href="#" onClick={(e) => { e.preventDefault() }}>Portfolio</a></li>
+          <li ref={(li) => navItemsRef[4] = li} onClick={() => {
             setCurrentSection("contactNav")
             window.scrollTo(0, window.scrollY + contactRef.current.getBoundingClientRect().top)
           }} id="contactNav"><a href="#" onClick={(e) => { e.preventDefault() }}>Contact</a></li>
@@ -445,7 +574,7 @@ function App() {
         </div>
         {/* END DEBUGGING: Color key*/}
 
-        <Navbar id="mainNav" className="w-100 justify-content-center p-0 d-flex">
+        <Navbar id="mainNav" className="w-100 justify-content-center p-0 d-none d-sm-flex disabled-phone tablet-anim">
           <ul className="d-flex flex-row p-0 align-items-center mx-0 my-2" id="navStyle">
             <li onClick={() => {
               setCurrentSection("homeNav")
@@ -471,20 +600,20 @@ function App() {
         </Navbar>
 
 
-        <div className="w-100 position-relative" style={{ flex: "1", textShadow: "1px 1px 4px black" }}>
-          <div className="position-absolute start-0 bottom-0 translate-middle-y" style={{ zIndex: "1", marginLeft: "128px" }}>
+        <div className="w-100 position-relative" style={{ flex: "1", textShadow: "black 0px 1px 1px" }}>
+          <div className="position-absolute hero-container">
             <h5 className="fw-light w-100 fw-semibold m-0" style={{ color: colorLightBW }}>Hi there, my name is</h5>
-            <h1 className="display-1 w-100 text-white">Jaime Castillo</h1>
+            <h1 className="display-1 w-100 fw-semibold text-white">Jaime Castillo</h1>
             <h5 className="fst-italic fw-semibold w-100 m-0" style={{ color: colorLightBW }}>Front end web developer | Data analyst</h5>
-            <div className="mt-3">
+            <div className="mt-3 hero-phone-button-container">
               <button type="button" className="btn hero-main" onClick={() => {
                 setCurrentSection("contactNav")
                 window.scrollTo(0, window.scrollY + contactRef.current.getBoundingClientRect().top)
               }}><h5 className="m-0 py-1" >Contact</h5></button>
               <button type="button" className="btn hero-secondary" style={{ backgroundColor: "#00000000" }} onClick={() => {
-              setCurrentSection("aboutNav")
-              window.scrollTo(0, window.scrollY + aboutRef.current.getBoundingClientRect().top)
-            }}><h5 className="m-0 py-1 fw-light" style={{ color: colorLightBW }}>Learn More</h5></button>
+                setCurrentSection("aboutNav")
+                window.scrollTo(0, window.scrollY + aboutRef.current.getBoundingClientRect().top)
+              }}><h5 className="m-0 py-1 fw-light" style={{ color: colorLightBW, textShadow: "black 0px 1px 1px"}}>Learn More</h5></button>
             </div>
           </div>
         </div>
@@ -492,35 +621,93 @@ function App() {
         <div className="w-100 position-absolute bottom-0" style={{ height: "200px", boxShadow: `${colorBlack} 0px -100px 70px -20px inset` }}></div>
       </Container>
 
-      <Container ref={aboutRef} id="aboutSection" className="px-auto" fluid style={{ backgroundColor: `${colorBlack}`, width: "calc(90vw - 256px)" }}>
+      <Container ref={aboutRef} id="aboutSection" className="px-auto responsive-width" style={{ backgroundColor: `${colorBlack}` }}>
         <h1 className="display-1 text-white mb-5" >About</h1>
 
-        <div className="d-flex justify-content-between pb-4 position-relative" >
-          <div className="about-image mb-auto me-3"></div>
+        <div className="d-flex about-flex-responsive justify-content-between pb-4 position-relative" style={{
+          background: "linear-gradient(to bottom right, rgb(15, 15, 15), rgb(0, 0, 0))",
+          padding: "1rem",
+          paddingBottom: "1rem",
+          borderRadius: "10px"
+        }}>
+          <div className="about-image me-3"></div>
           <div className="w-auto text-white about-text d-flex flex-column ms-3">
             <div className="d-flex flex-column flex-grow-1 justify-content-between">
-              <p className="my-1">Hello! Born and raised in Texas, I am a front-end web developer and data analyst with a passion for crafting innovative and user-friendly web experiences. Aside from being self-taught, I have also attended a UTSA Web Development Bootcamp, where I further honed my skills in front-end technologies. These include React.js, Bootstrap, and Plotly.js, which allow me to create dynamic and engaging applications.</p>
-              <p className="my-1">My professional background includes analyzing complex datasets and building semi-automated solutions as part of a triage team at Incedo/Verizon. With this experience, I've gained a strong foundation in data visualization, problem-solving, and optimizing workflows.</p>
-              <p className="my-1">Self-taught photographer! Outside of tech, I enjoy photography—refining images with Adobe Lightroom and Photoshop.</p>
-              <p className="my-1">As a bilingual English and Spanish speaker, I excel at connecting with diverse clients and collaborators. Whether you need a sleek website or actionable insights, I’m here to help bring your vision to life.</p>
+              <span className="mb-1 fw-semibold">
+                Hello! I am a Texas-born bilingual front-end web developer and data analyst passionate about building user-friendly and innovative web experiences. I leverage my technical skills and analytical background to create engaging applications.
+              </span>
+              <p className="my-1">Proficient in front-end development using React.js, Bootstrap, HTML5, and CSS.</p>
+              <p className="my-1">Proven ability to analyze complex datasets, identify trends, and improve workflows using JavaScript and Plotly.js</p>
+              <p className="my-1">Adept at customer service and technical support, with experience troubleshooting devices and resolving inquiries in fast-paced environments (Starry, Inc., Apple, Frontier Communications).</p>
+              <p className="my-1">Self-taught photographer with experience in Adobe Lightroom and Photoshop.</p>
             </div>
           </div>
         </div>
       </Container>
 
-      <Container ref={resumeRef} id="resumeSection" className="px-auto" fluid style={{ backgroundColor: `${colorBlack}`, minHeight: "100vh", width: "calc(90vw - 256px)" }}>
-        <div className="w-100 d-flex flex-column justify-content-center" style={{ height: "11rem" }}>
-          <h1 className="display-1 text-white w-100 text-end">Resume</h1>
+      <Container ref={resumeRef} id="resumeSection" className="px-auto responsive-width" fluid style={{ backgroundColor: `${colorBlack}`, minHeight: "100vh" }}>
+        <div className="w-100 d-flex flex-column justify-content-center" >
+          <h1 className="display-1 text-white w-100 text-end my-5">Resume</h1>
         </div>
         <div id="resumeContainer" className="h-50 position-relative">
-          <div className="d-flex align-items-start">
-            <div className="nav flex-column nav-pills  position-relative mx-5" id="v-pills-tab" role="tablist" aria-orientation="vertical" >
+          <div className="d-flex align-items-start flex-responsive">
 
-              <button onClick={() => { processResumeTransition() }} className="nav-link active" id="v-pills-verizon-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verizon" type="button" role="tab" aria-controls="v-pills-verizon" aria-selected="true">Verizon</button>
-              <button onClick={() => { processResumeTransition() }} className="nav-link" id="v-pills-starry-tab" data-bs-toggle="pill" data-bs-target="#v-pills-starry" type="button" role="tab" aria-controls="v-pills-starry" aria-selected="false">Starry, Inc.</button>
-              <button onClick={() => { processResumeTransition() }} className="nav-link" id="v-pills-apple-tab" data-bs-toggle="pill" data-bs-target="#v-pills-apple" type="button" role="tab" aria-controls="v-pills-apple" aria-selected="false">Apple</button>
-              <button onClick={() => { processResumeTransition() }} className="nav-link" id="v-pills-frontier-tab" data-bs-toggle="pill" data-bs-target="#v-pills-frontier" type="button" role="tab" aria-controls="v-pills-frontier" aria-selected="false">Frontier <br></br>Communications</button>
-              <button onClick={() => { processResumeTransition() }} className="nav-link" id="v-pills-whataburger-tab" data-bs-toggle="pill" data-bs-target="#v-pills-whataburger" type="button" role="tab" aria-controls="v-pills-whataburger" aria-selected="false">Whataburger</button>
+            <div className="dropdown mb-3 d-lg-none w-100">
+              <button className="btn dropdown-toggle float-end text-white" style={{ backgroundColor: colorPrimary }} type="button" id="dropdownResumeMenuButton" data-bs-toggle="dropdown" aria-expanded="false" >
+                <span className="px-3 fw-semibold">
+                  {activeResumeTab === 'v-pills-verizon' && 'Verizon'}
+                  {activeResumeTab === 'v-pills-starry' && 'Starry, Inc.'}
+                  {activeResumeTab === 'v-pills-apple' && 'Apple'}
+                  {activeResumeTab === 'v-pills-frontier' && 'Frontier Communications'}
+                  {activeResumeTab === 'v-pills-whataburger' && 'Whataburger'}
+                </span>
+              </button>
+              <ul className="dropdown-menu" aria-labelledby="dropdownResumeMenuButton">
+                <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-verizon' ? 'active' : ''}`} type="button" onClick={() => {
+                  document.getElementById(activeResumeTab).classList.toggle("active")
+                  document.getElementById(activeResumeTab).classList.toggle("show")
+                  document.getElementById("v-pills-verizon").classList.add("active")
+                  document.getElementById("v-pills-verizon").classList.add("show")
+                  handleResumeTabClick('v-pills-verizon')
+                }} >Verizon</button></li>
+                <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-starry' ? 'active' : ''}`} type="button" onClick={() => {
+                  document.getElementById(activeResumeTab).classList.toggle("active")
+                  document.getElementById(activeResumeTab).classList.toggle("show")
+                  document.getElementById("v-pills-starry").classList.add("active")
+                  document.getElementById("v-pills-starry").classList.add("show")
+                  handleResumeTabClick('v-pills-starry')
+                }}  >Starry, Inc.</button></li>
+                <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-apple' ? 'active' : ''}`} type="button" onClick={() => {
+                  document.getElementById(activeResumeTab).classList.toggle("active")
+                  document.getElementById(activeResumeTab).classList.toggle("show")
+                  document.getElementById("v-pills-apple").classList.add("active")
+                  document.getElementById("v-pills-apple").classList.add("show")
+                  handleResumeTabClick('v-pills-apple')
+                }} >Apple</button></li>
+                <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-frontier' ? 'active' : ''}`} type="button" onClick={() => {
+                  document.getElementById(activeResumeTab).classList.toggle("active")
+                  document.getElementById(activeResumeTab).classList.toggle("show")
+                  document.getElementById("v-pills-frontier").classList.add("active")
+                  document.getElementById("v-pills-frontier").classList.add("show")
+                  handleResumeTabClick('v-pills-frontier')
+                }}>Frontier Communications</button></li>
+                <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-whataburger' ? 'active' : ''}`} type="button" onClick={() => {
+                  document.getElementById(activeResumeTab).classList.toggle("active")
+                  document.getElementById(activeResumeTab).classList.toggle("show")
+                  document.getElementById("v-pills-whataburger").classList.add("active")
+                  document.getElementById("v-pills-whataburger").classList.add("show")
+                  handleResumeTabClick('v-pills-whataburger')
+                }}>Whataburger</button></li>
+              </ul>
+            </div>
+
+            <div className="nav flex-column nav-pills position-relative mx-5 d-none d-lg-flex" id="v-pills-tab" role="tablist" aria-orientation="vertical" >
+
+              <button onClick={() => { handleResumeTabClick('v-pills-verizon') }} className="nav-link active" id="v-pills-verizon-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verizon" type="button" role="tab" aria-controls="v-pills-verizon" aria-selected="true">Verizon</button>
+              <button onClick={() => { handleResumeTabClick('v-pills-starry') }} className="nav-link" id="v-pills-starry-tab" data-bs-toggle="pill" data-bs-target="#v-pills-starry" type="button" role="tab" aria-controls="v-pills-starry" aria-selected="false">Starry, Inc.</button>
+              <button onClick={() => { handleResumeTabClick('v-pills-apple') }} className="nav-link" id="v-pills-apple-tab" data-bs-toggle="pill" data-bs-target="#v-pills-apple" type="button" role="tab" aria-controls="v-pills-apple" aria-selected="false">Apple</button>
+              <button onClick={() => { handleResumeTabClick('v-pills-frontier') }} className="nav-link" id="v-pills-frontier-tab" data-bs-toggle="pill" data-bs-target="#v-pills-frontier" type="button" role="tab" aria-controls="v-pills-frontier" aria-selected="false">Frontier <br></br>Communications</button>
+              <button onClick={() => { handleResumeTabClick('v-pills-whataburger') }} className="nav-link" id="v-pills-whataburger-tab" data-bs-toggle="pill" data-bs-target="#v-pills-whataburger" type="button" role="tab" aria-controls="v-pills-whataburger" aria-selected="false">Whataburger</button>
 
             </div>
             <div className="tab-content position-relative" id="v-pills-tabContent" style={{ opacity: `${resumeTransition ? "0" : "1"}` }}>
@@ -574,6 +761,7 @@ respective supervisors to diffuse scenarios.
                   subcontractor={null}
                 />
               </div>
+
               <div className="tab-pane fade" id="v-pills-apple" role="tabpanel" aria-labelledby="v-pills-apple-tab">
                 <ResumeContent
                   title={"Customer/Technical Support"}
@@ -594,6 +782,7 @@ summary would be written under the customer's account.
                   subcontractor={"Majorel"}
                 />
               </div>
+
               <div className="tab-pane fade" id="v-pills-frontier" role="tabpanel" aria-labelledby="v-pills-frontier-tab">
                 <ResumeContent
                   title={"Customer Service Representative"}
@@ -615,6 +804,7 @@ It does go to mention it is not uncommon for us to work with upset customers her
                   rod={'Received better economic opportunity; left after 2 weeks notice'}
                   subcontractor={"OneSupport"}
                 /></div>
+
               <div className="tab-pane fade" id="v-pills-whataburger" role="tabpanel" aria-labelledby="v-pills-whataburger-tab">
                 <ResumeContent
                   title={"Team Member"}
@@ -643,10 +833,10 @@ This role honed my ability to thrive under pressure, build rapport with diverse 
 
       </Container>
 
-      <Container ref={portfolioRef} id="portfolioSection" className="px-auto " fluid style={{ backgroundColor: `${colorBlack}`, width: "calc(90vw - 256px)" }}>
+      <Container ref={portfolioRef} id="portfolioSection" className="px-auto responsive-width" fluid style={{ backgroundColor: `${colorBlack}` }}>
         <h1 className="display-1 text-white my-5">Portfolio</h1>
 
-        <div className="d-flex justify-content-start pb-4 position-relative" style={{ minHeight: "fit-content", maxHeight: "75vh" }}>
+        <div className="d-flex  pb-4 position-relative portfolio-content-layout" style={{ minHeight: "fit-content", maxHeight: "75vh" }}>
           <ProjectBlock
             title={"Password Generator"}
             description={"UTSA BOOTCAMP PROJECT: Password generator with different criteria; 8-128 characters."}
@@ -663,53 +853,52 @@ This role honed my ability to thrive under pressure, build rapport with diverse 
           />
         </div>
       </Container>
-      <Container ref={contactRef} id="contactSection" className="px-auto" fluid style={{ backgroundColor: `${colorBlack}`, height: "100vh", width: "calc(90vw - 256px)" }}>
+      <Container ref={contactRef} id="contactSection" className="px-auto responsive-width" fluid style={{ backgroundColor: `${colorBlack}`, minHeight: "100vh" }}>
         <div className="w-100 d-flex flex-column justify-content-center" style={{ height: "11rem" }}>
           <h1 className="display-1 text-white w-100 text-end">Contact</h1>
           <h5 className="text-white w-100 text-end fw-light fst-italic">Let's get in touch!</h5>
 
         </div>
 
-        <div className="w-100 d-flex">
-          <div className="w-50 d-flex justify-content-start flex-column p-5 border-end position-relative" style={{ gap: "1rem", zIndex: "2" }}>
-
-            <div className="w-75 ms-auto d-flex justify-content-start contact-method"
+        <div className="w-100 d-flex contact-flow ">
+          <div className="d-flex justify-content-start flex-column position-relative contact-items" style={{ gap: "1rem", zIndex: "2" }}>
+            <div className="ms-auto d-flex contact-method text-break"
               onClick={() => {
                 if (hasAuthenticated) {
                   window.location.href = `mailto:${contactInfo.email}?subject=Contact from Portfolio&body=Hello, I would like to get in touch!`
                 }
               }}>
-              <div className="rounded-circle bg-white m-3 position-relative d-inline-block" style={{ height: "3rem", width: "3rem" }}>
+              <div className="rounded-circle bg-white m-3 position-relative d-inline-block" style={{ height: "3rem", minWidth: "3rem" }}>
                 <i className="bi bi-envelope-at-fill position-absolute start-50 top-50 translate-middle" style={{ fontSize: "2rem" }}></i>
               </div>
-              <div className="h-100 d-inline-block d-flex flex-column justify-content-center">
+              <div className="d-inline-block d-flex flex-column justify-content-center">
                 <span className="text-white font-monospace">{contactInfo.email}</span>
               </div>
             </div>
 
-            <div className="w-75 ms-auto d-flex justify-content-start contact-method"
+            <div className="ms-auto d-flex contact-method"
               onClick={() => {
                 if (hasAuthenticated) {
                   window.location.href = `tel:+1${contactInfo.phone}`
                 }
               }}>
-              <div className="rounded-circle bg-white m-3 position-relative d-inline-block" style={{ height: "3rem", width: "3rem" }}>
+              <div className="rounded-circle bg-white m-3 position-relative d-inline-block" style={{ height: "3rem", minWidth: "3rem" }}>
                 <i className="bi bi-telephone-fill position-absolute start-50 top-50 translate-middle" style={{ fontSize: "2rem" }}></i>
               </div>
-              <div className="h-100 d-inline-block d-flex flex-column justify-content-center">
+              <div className="d-inline-block d-flex flex-column justify-content-center">
                 <span className="text-white font-monospace">{contactInfo.phone}</span>
               </div>
             </div>
 
-            <div className="w-75 ms-auto d-flex justify-content-start contact-method " onClick={() => { window.open("https://github.com/jc79932", "_blank") }}>
-              <div className="rounded-circle bg-white m-3 position-relative d-inline-block" style={{ height: "3rem", width: "3rem" }}>
+            <div className="ms-auto d-flex contact-method " onClick={() => { window.open("https://github.com/jc79932", "_blank") }}>
+              <div className="rounded-circle bg-white m-3 position-relative d-inline-block" style={{ height: "3rem", minWidth: "3rem" }}>
                 <i className="bi bi-github position-absolute start-50 top-50 translate-middle" style={{ fontSize: "2rem" }}></i>
               </div>
-              <div className="h-100 d-inline-block d-flex flex-column justify-content-center">
+              <div className="d-inline-block d-flex flex-column justify-content-center">
                 <span className="text-white font-monospace">jc79932</span>
               </div>
             </div>
-            <button type="button" className={`btn text-white w-75 ms-auto fw-semibold ${hasAuthenticated ? "d-none" : ""}`} id="revealContactsButton" style={{ backgroundColor: `${colorPrimary}` }} onClick={async () => {
+            <button type="button" className={`btn text-white ms-auto fw-semibold ${hasAuthenticated ? "d-none" : ""}`} id="revealContactsButton" style={{ backgroundColor: `${colorPrimary}` }} onClick={async () => {
               setIsAuthenticating(true)
               try {
                 const response = await axios.get('https://script.google.com/macros/s/AKfycbzBWtH3t5Euc_zFT8pwtpR2-Dq9lSt27OkyB0W3tTI_m0eK8gXhkLEQZqE7VMtwnK60/exec', {
@@ -731,7 +920,7 @@ This role honed my ability to thrive under pressure, build rapport with diverse 
               </>
               : "Click to reveal"}  </button>
           </div>
-          <Form className="w-50 p-5">
+          <Form className="contact-items">
             <Form.Group className="mb-3" controlId="formName">
               <Form.Label className="text-white"><h5>Name</h5></Form.Label>
               <Form.Control className="contact-input" type="text" placeholder="" />
@@ -744,7 +933,7 @@ This role honed my ability to thrive under pressure, build rapport with diverse 
             <Row>
               <Col>
                 <Form.Group className="mb-3" controlId="formEmail">
-                  <Form.Label className="text-white"><h5>Email Address</h5></Form.Label>
+                  <Form.Label className="text-white"><h5>Email</h5></Form.Label>
                   <Form.Control className="contact-input" type="email" placeholder="" />
                   <Form.Text id="formEmailInputText" className="fst-italic form-text-optional">
                     (Optional)
@@ -760,7 +949,7 @@ This role honed my ability to thrive under pressure, build rapport with diverse 
               <Col>
                 <Form.Group className="mb-3" controlId="formNumber">
 
-                  <Form.Label className="text-white"><h5>Phone Number</h5></Form.Label>
+                  <Form.Label className="text-white"><h5>Phone</h5></Form.Label>
                   <Form.Control className="contact-input" type="tel" placeholder="" />
                   <Form.Text id="formNumberInputText" className="fst-italic form-text-optional">
                     (Optional)

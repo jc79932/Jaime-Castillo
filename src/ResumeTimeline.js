@@ -38,7 +38,7 @@ export default function ResumeContent({ title, location, duration, description, 
             <div><h4 className="d-inline-block">{location}</h4><span className="small fw-light fst-italic">{subcontractor != null ? ` (Subcontracted via ${subcontractor})` : ""}</span></div>
             <h4>{duration}</h4>
             <p>{preBullets}</p>
-            <ul className="list-group list-group-flush mx-4">{bullets}</ul>
+            <ul className="list-group list-group-flush ">{bullets}</ul>
             <p className="pt-3">{splitArray[splitArray.length - 1].split("\n")[1].length != 0 ? splitArray[splitArray.length - 1].split("\n")[1] : ""}</p>
             <p><b>Reason of Leave: </b>{rod}</p>
         </div>

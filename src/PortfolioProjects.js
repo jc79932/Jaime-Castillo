@@ -1,14 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 const colorSecondary = "#284b63";
 export default function ProjectBlock({ title, description, url, cover, sendURL }) {
     const idName = title.match(/[a-zA-Z0-9._-]+/g)?.join('') || ''
     const [isHovered, setIsHovered] = useState(false);
 
+
     return (
         <div
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className="me-5 position-relative" style={{ transition:"all 0.5s ease", transform: isHovered ? "scale(1.05)" : "", backgroundColor: "#ffffff", color: "#000000", borderRadius: "10px", height: "200px", width: "300px", backgroundSize: "cover", backgroundRepeat: "no-repeat", backgroundPosition: "center", backgroundImage: `url(${cover})` }}>
+            onClick={()=>
+                {
+                    setIsHovered(true)
+                    setTimeout(() => {
+                        setIsHovered(false)
+                    }, 5000);
+                }}
+            className="position-relative portfolio-block-margin" style={{ transition:"all 0.5s ease", transform: isHovered ? "scale(1.05)" : "", backgroundColor: "#ffffff", color: "#000000", borderRadius: "10px", backgroundSize: "cover", backgroundRepeat: "no-repeat", backgroundPosition: "center", backgroundImage: `url(${cover})` }}>
+            <div className={`position-absolute top-0 portfolio-block-timeout ${isHovered ? "portfolio-block-timeout-active" : ""}`}></div>
             <div className="position-absolute top-50 start-50 translate-middle w-100 h-100" style={{ transition:"all 0.5s ease", opacity: isHovered ? "1" : "0", backgroundColor: `${!isHovered ? "#00000000" : "#00000088"}`, borderRadius: "10px" }}>
                 <div className="position-absolute top-50 start-50 translate-middle w-100 h-100 d-flex flex-column justify-content-center">
                     <button onClick={()=>{sendURL(url)}} style={{backgroundColor: `${isHovered ? colorSecondary : "#00000000"}`}} className={`btn fw-semibold my-0 text-white m-auto ${isHovered ? "d-inline-block" : "d-none"}`}>Open preview</button>
