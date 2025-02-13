@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/Jaime-Castillo/static/css/main.fcaa4c36.css",
+    "main.css": "/Jaime-Castillo/static/css/main.58240510.css",
     "main.js": "/Jaime-Castillo/static/js/main.d01931df.js",
     "static/js/453.e76fa8c2.chunk.js": "/Jaime-Castillo/static/js/453.e76fa8c2.chunk.js",
     "static/media/Hero-BG.jpg": "/Jaime-Castillo/static/media/Hero-BG.23169df29fa101608bd7.jpg",
@@ -10,12 +10,12 @@
     "static/media/PortfolioProjects02.png": "/Jaime-Castillo/static/media/PortfolioProjects02.07b320c1d9bb9cfb50dd.png",
     "static/media/PortfolioProjects01.png": "/Jaime-Castillo/static/media/PortfolioProjects01.760a1b5a7020a0b4106a.png",
     "index.html": "/Jaime-Castillo/index.html",
-    "main.fcaa4c36.css.map": "/Jaime-Castillo/static/css/main.fcaa4c36.css.map",
+    "main.58240510.css.map": "/Jaime-Castillo/static/css/main.58240510.css.map",
     "main.d01931df.js.map": "/Jaime-Castillo/static/js/main.d01931df.js.map",
     "453.e76fa8c2.chunk.js.map": "/Jaime-Castillo/static/js/453.e76fa8c2.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.fcaa4c36.css",
+    "static/css/main.58240510.css",
     "static/js/main.d01931df.js"
   ]
 }
