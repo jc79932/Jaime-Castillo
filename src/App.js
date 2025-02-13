@@ -621,7 +621,7 @@ function App() {
         <div className="w-100 position-absolute bottom-0" style={{ height: "200px", boxShadow: `${colorBlack} 0px -100px 70px -20px inset` }}></div>
       </Container>
 
-      <Container ref={aboutRef} id="aboutSection" className="px-auto responsive-width" style={{ backgroundColor: `${colorBlack}` }}>
+      <Container ref={aboutRef} id="aboutSection" className="px-auto responsive-width" fluid style={{ backgroundColor: `${colorBlack}` }}>
         <h1 className="display-1 text-white mb-5" >About</h1>
 
         <div className="d-flex about-flex-responsive justify-content-between pb-4 position-relative" style={{
