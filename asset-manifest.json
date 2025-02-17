@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/Jaime-Castillo/static/css/main.58240510.css",
-    "main.js": "/Jaime-Castillo/static/js/main.d01931df.js",
+    "main.css": "/Jaime-Castillo/static/css/main.af7e1fac.css",
+    "main.js": "/Jaime-Castillo/static/js/main.f888b518.js",
     "static/js/453.e76fa8c2.chunk.js": "/Jaime-Castillo/static/js/453.e76fa8c2.chunk.js",
     "static/media/Hero-BG.jpg": "/Jaime-Castillo/static/media/Hero-BG.23169df29fa101608bd7.jpg",
     "static/media/About.jpg": "/Jaime-Castillo/static/media/About.149e6ccc65df7d796aec.jpg",
@@ -10,12 +10,12 @@
     "static/media/PortfolioProjects02.png": "/Jaime-Castillo/static/media/PortfolioProjects02.07b320c1d9bb9cfb50dd.png",
     "static/media/PortfolioProjects01.png": "/Jaime-Castillo/static/media/PortfolioProjects01.760a1b5a7020a0b4106a.png",
     "index.html": "/Jaime-Castillo/index.html",
-    "main.58240510.css.map": "/Jaime-Castillo/static/css/main.58240510.css.map",
-    "main.d01931df.js.map": "/Jaime-Castillo/static/js/main.d01931df.js.map",
+    "main.af7e1fac.css.map": "/Jaime-Castillo/static/css/main.af7e1fac.css.map",
+    "main.f888b518.js.map": "/Jaime-Castillo/static/js/main.f888b518.js.map",
     "453.e76fa8c2.chunk.js.map": "/Jaime-Castillo/static/js/453.e76fa8c2.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.58240510.css",
-    "static/js/main.d01931df.js"
+    "static/css/main.af7e1fac.css",
+    "static/js/main.f888b518.js"
   ]
 }
