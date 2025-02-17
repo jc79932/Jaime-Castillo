@@ -24,10 +24,7 @@ const colorBlack = "#000000"
 
 function App() {
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    // console.log("Scrolling to top.")
-  }, []);
+
   const aboutRef = useRef(null);
   const resumeRef = useRef(null);
   const portfolioRef = useRef(null);
@@ -53,6 +50,46 @@ function App() {
   const [submitButtonText, setSubmitButtonText] = useState("Submit")
   const viewportHeight = window.innerHeight;
 
+
+  useEffect(() => {
+    window.scrollTo(0, 0); //Scroll to top of page upon reload.
+    setTimeout(() => {
+      document.querySelector(".hero-container").classList.remove("hero-initial-pos")
+    }, 500);
+  }, []);
+
+  const useIntersection = (ref, options) => {
+    const [hasIntersected, setHasIntersected] = useState(false);
+    useEffect(() => {
+      const element = ref.current;
+      if (!element) return;
+
+      const observer = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) {
+          setHasIntersected(true);
+          observer.unobserve(element);
+        }
+      }, options);
+      observer.observe(element);
+
+      return () => {
+        if (element) observer.unobserve(element);
+      };
+    }, [ref, options]);
+
+    return hasIntersected;
+  };
+
+  const isAboutVisible = useIntersection(aboutRef, { threshold: 0.1 });
+  const isResumeVisible = useIntersection(resumeRef, { threshold: 0.1 });
+  const isPortfolioVisible = useIntersection(portfolioRef, { threshold: 0.1 });
+  const isContactVisible = useIntersection(contactRef, { threshold: 0.1 });
+  const testFunction = useCallback(() => {
+    console.log("About is visible: ", isAboutVisible)
+  }, [isAboutVisible])
+  useEffect(() => {
+    testFunction()
+  }, [testFunction])
   function toggleTopNav() {
     console.log("topNavStatus: ", topNavStatus);
   }
@@ -601,7 +638,7 @@ function App() {
 
 
         <div className="w-100 position-relative" style={{ flex: "1", textShadow: "black 0px 1px 1px" }}>
-          <div className="position-absolute hero-container">
+          <div className="position-absolute hero-container hero-initial-pos">
             <h5 className="fw-light w-100 fw-semibold m-0" style={{ color: colorLightBW }}>Hi there, my name is</h5>
             <h1 className="display-1 w-100 fw-semibold text-white">Jaime Castillo</h1>
             <h5 className="fst-italic fw-semibold w-100 m-0" style={{ color: colorLightBW }}>Front end web developer | Data analyst</h5>
@@ -613,7 +650,7 @@ function App() {
               <button type="button" className="btn hero-secondary" style={{ backgroundColor: "#00000000" }} onClick={() => {
                 setCurrentSection("aboutNav")
                 window.scrollTo(0, window.scrollY + aboutRef.current.getBoundingClientRect().top)
-              }}><h5 className="m-0 py-1 fw-light" style={{ color: colorLightBW, textShadow: "black 0px 1px 1px"}}>Learn More</h5></button>
+              }}><h5 className="m-0 py-1 fw-light" style={{ color: colorLightBW, textShadow: "black 0px 1px 1px" }}>Learn More</h5></button>
             </div>
           </div>
         </div>
@@ -622,101 +659,105 @@ function App() {
       </Container>
 
       <Container ref={aboutRef} id="aboutSection" className="px-auto responsive-width" fluid style={{ backgroundColor: `${colorBlack}` }}>
-        <h1 className="display-1 text-white mb-5" >About</h1>
+        <div className={isAboutVisible ? "" : "anim-slide-right"} style={{ transition: "all 1s ease" }}>
+          <h1 className="display-1 text-white mb-5" >About</h1>
 
-        <div className="d-flex about-flex-responsive justify-content-between pb-4 position-relative" style={{
-          background: "linear-gradient(to bottom right, rgb(15, 15, 15), rgb(0, 0, 0))",
-          padding: "1rem",
-          paddingBottom: "1rem",
-          borderRadius: "10px"
-        }}>
-          <div className="about-image me-3"></div>
-          <div className="w-auto text-white about-text d-flex flex-column ms-3">
-            <div className="d-flex flex-column flex-grow-1 justify-content-between">
-              <span className="mb-1 fw-semibold">
-                Hello! I am a Texas-born bilingual front-end web developer and data analyst passionate about building user-friendly and innovative web experiences. I leverage my technical skills and analytical background to create engaging applications.
-              </span>
-              <p className="my-1">Proficient in front-end development using React.js, Bootstrap, HTML5, and CSS.</p>
-              <p className="my-1">Proven ability to analyze complex datasets, identify trends, and improve workflows using JavaScript and Plotly.js</p>
-              <p className="my-1">Adept at customer service and technical support, with experience troubleshooting devices and resolving inquiries in fast-paced environments (Starry, Inc., Apple, Frontier Communications).</p>
-              <p className="my-1">Self-taught photographer with experience in Adobe Lightroom and Photoshop.</p>
+          <div className="d-flex about-flex-responsive justify-content-between pb-4 position-relative" style={{
+            background: "linear-gradient(to bottom right, rgb(15, 15, 15), rgb(0, 0, 0))",
+            padding: "1rem",
+            paddingBottom: "1rem",
+            borderRadius: "10px"
+          }}>
+            <div className="about-image me-3"></div>
+            <div className="w-auto text-white about-text d-flex flex-column ms-3">
+              <div className="d-flex flex-column flex-grow-1 justify-content-between">
+                <span className="mb-1 fw-semibold">
+                  Hello! I am a Texas-born bilingual front-end web developer and data analyst passionate about building user-friendly and innovative web experiences. I leverage my technical skills and analytical background to create engaging applications.
+                </span>
+                <p className="my-1">Proficient in front-end development using React.js, Bootstrap, HTML5, and CSS.</p>
+                <p className="my-1">Proven ability to analyze complex datasets, identify trends, and improve workflows using JavaScript and Plotly.js</p>
+                <p className="my-1">Adept at customer service and technical support, with experience troubleshooting devices and resolving inquiries in fast-paced environments (Starry, Inc., Apple, Frontier Communications).</p>
+                <p className="my-1">Self-taught photographer with experience in Adobe Lightroom and Photoshop.</p>
+              </div>
             </div>
           </div>
         </div>
       </Container>
 
       <Container ref={resumeRef} id="resumeSection" className="px-auto responsive-width" fluid style={{ backgroundColor: `${colorBlack}`, minHeight: "100vh" }}>
-        <div className="w-100 d-flex flex-column justify-content-center" >
-          <h1 className="display-1 text-white w-100 text-end my-5">Resume</h1>
-        </div>
-        <div id="resumeContainer" className="h-50 position-relative">
-          <div className="d-flex align-items-start flex-responsive">
+        <div className={isResumeVisible ? "" : "anim-slide-left"} style={{ transition: "all 1s ease" }}>
 
-            <div className="dropdown mb-3 d-lg-none w-100">
-              <button className="btn dropdown-toggle float-end text-white" style={{ backgroundColor: colorPrimary }} type="button" id="dropdownResumeMenuButton" data-bs-toggle="dropdown" aria-expanded="false" >
-                <span className="px-3 fw-semibold">
-                  {activeResumeTab === 'v-pills-verizon' && 'Verizon'}
-                  {activeResumeTab === 'v-pills-starry' && 'Starry, Inc.'}
-                  {activeResumeTab === 'v-pills-apple' && 'Apple'}
-                  {activeResumeTab === 'v-pills-frontier' && 'Frontier Communications'}
-                  {activeResumeTab === 'v-pills-whataburger' && 'Whataburger'}
-                </span>
-              </button>
-              <ul className="dropdown-menu" aria-labelledby="dropdownResumeMenuButton">
-                <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-verizon' ? 'active' : ''}`} type="button" onClick={() => {
-                  document.getElementById(activeResumeTab).classList.toggle("active")
-                  document.getElementById(activeResumeTab).classList.toggle("show")
-                  document.getElementById("v-pills-verizon").classList.add("active")
-                  document.getElementById("v-pills-verizon").classList.add("show")
-                  handleResumeTabClick('v-pills-verizon')
-                }} >Verizon</button></li>
-                <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-starry' ? 'active' : ''}`} type="button" onClick={() => {
-                  document.getElementById(activeResumeTab).classList.toggle("active")
-                  document.getElementById(activeResumeTab).classList.toggle("show")
-                  document.getElementById("v-pills-starry").classList.add("active")
-                  document.getElementById("v-pills-starry").classList.add("show")
-                  handleResumeTabClick('v-pills-starry')
-                }}  >Starry, Inc.</button></li>
-                <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-apple' ? 'active' : ''}`} type="button" onClick={() => {
-                  document.getElementById(activeResumeTab).classList.toggle("active")
-                  document.getElementById(activeResumeTab).classList.toggle("show")
-                  document.getElementById("v-pills-apple").classList.add("active")
-                  document.getElementById("v-pills-apple").classList.add("show")
-                  handleResumeTabClick('v-pills-apple')
-                }} >Apple</button></li>
-                <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-frontier' ? 'active' : ''}`} type="button" onClick={() => {
-                  document.getElementById(activeResumeTab).classList.toggle("active")
-                  document.getElementById(activeResumeTab).classList.toggle("show")
-                  document.getElementById("v-pills-frontier").classList.add("active")
-                  document.getElementById("v-pills-frontier").classList.add("show")
-                  handleResumeTabClick('v-pills-frontier')
-                }}>Frontier Communications</button></li>
-                <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-whataburger' ? 'active' : ''}`} type="button" onClick={() => {
-                  document.getElementById(activeResumeTab).classList.toggle("active")
-                  document.getElementById(activeResumeTab).classList.toggle("show")
-                  document.getElementById("v-pills-whataburger").classList.add("active")
-                  document.getElementById("v-pills-whataburger").classList.add("show")
-                  handleResumeTabClick('v-pills-whataburger')
-                }}>Whataburger</button></li>
-              </ul>
-            </div>
+          <div className="w-100 d-flex flex-column justify-content-center" >
+            <h1 className="display-1 text-white w-100 text-end my-5">Resume</h1>
+          </div>
+          <div id="resumeContainer" className="h-50 position-relative">
+            <div className="d-flex align-items-start flex-responsive">
 
-            <div className="nav flex-column nav-pills position-relative mx-5 d-none d-lg-flex" id="v-pills-tab" role="tablist" aria-orientation="vertical" >
+              <div className="dropdown mb-3 d-lg-none w-100">
+                <button className="btn dropdown-toggle float-end text-white" style={{ backgroundColor: colorPrimary }} type="button" id="dropdownResumeMenuButton" data-bs-toggle="dropdown" aria-expanded="false" >
+                  <span className="px-3 fw-semibold">
+                    {activeResumeTab === 'v-pills-verizon' && 'Verizon'}
+                    {activeResumeTab === 'v-pills-starry' && 'Starry, Inc.'}
+                    {activeResumeTab === 'v-pills-apple' && 'Apple'}
+                    {activeResumeTab === 'v-pills-frontier' && 'Frontier Communications'}
+                    {activeResumeTab === 'v-pills-whataburger' && 'Whataburger'}
+                  </span>
+                </button>
+                <ul className="dropdown-menu" aria-labelledby="dropdownResumeMenuButton">
+                  <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-verizon' ? 'active' : ''}`} type="button" onClick={() => {
+                    document.getElementById(activeResumeTab).classList.toggle("active")
+                    document.getElementById(activeResumeTab).classList.toggle("show")
+                    document.getElementById("v-pills-verizon").classList.add("active")
+                    document.getElementById("v-pills-verizon").classList.add("show")
+                    handleResumeTabClick('v-pills-verizon')
+                  }} >Verizon</button></li>
+                  <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-starry' ? 'active' : ''}`} type="button" onClick={() => {
+                    document.getElementById(activeResumeTab).classList.toggle("active")
+                    document.getElementById(activeResumeTab).classList.toggle("show")
+                    document.getElementById("v-pills-starry").classList.add("active")
+                    document.getElementById("v-pills-starry").classList.add("show")
+                    handleResumeTabClick('v-pills-starry')
+                  }}  >Starry, Inc.</button></li>
+                  <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-apple' ? 'active' : ''}`} type="button" onClick={() => {
+                    document.getElementById(activeResumeTab).classList.toggle("active")
+                    document.getElementById(activeResumeTab).classList.toggle("show")
+                    document.getElementById("v-pills-apple").classList.add("active")
+                    document.getElementById("v-pills-apple").classList.add("show")
+                    handleResumeTabClick('v-pills-apple')
+                  }} >Apple</button></li>
+                  <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-frontier' ? 'active' : ''}`} type="button" onClick={() => {
+                    document.getElementById(activeResumeTab).classList.toggle("active")
+                    document.getElementById(activeResumeTab).classList.toggle("show")
+                    document.getElementById("v-pills-frontier").classList.add("active")
+                    document.getElementById("v-pills-frontier").classList.add("show")
+                    handleResumeTabClick('v-pills-frontier')
+                  }}>Frontier Communications</button></li>
+                  <li><button className={`dropdown-item ${activeResumeTab === 'v-pills-whataburger' ? 'active' : ''}`} type="button" onClick={() => {
+                    document.getElementById(activeResumeTab).classList.toggle("active")
+                    document.getElementById(activeResumeTab).classList.toggle("show")
+                    document.getElementById("v-pills-whataburger").classList.add("active")
+                    document.getElementById("v-pills-whataburger").classList.add("show")
+                    handleResumeTabClick('v-pills-whataburger')
+                  }}>Whataburger</button></li>
+                </ul>
+              </div>
 
-              <button onClick={() => { handleResumeTabClick('v-pills-verizon') }} className="nav-link active" id="v-pills-verizon-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verizon" type="button" role="tab" aria-controls="v-pills-verizon" aria-selected="true">Verizon</button>
-              <button onClick={() => { handleResumeTabClick('v-pills-starry') }} className="nav-link" id="v-pills-starry-tab" data-bs-toggle="pill" data-bs-target="#v-pills-starry" type="button" role="tab" aria-controls="v-pills-starry" aria-selected="false">Starry, Inc.</button>
-              <button onClick={() => { handleResumeTabClick('v-pills-apple') }} className="nav-link" id="v-pills-apple-tab" data-bs-toggle="pill" data-bs-target="#v-pills-apple" type="button" role="tab" aria-controls="v-pills-apple" aria-selected="false">Apple</button>
-              <button onClick={() => { handleResumeTabClick('v-pills-frontier') }} className="nav-link" id="v-pills-frontier-tab" data-bs-toggle="pill" data-bs-target="#v-pills-frontier" type="button" role="tab" aria-controls="v-pills-frontier" aria-selected="false">Frontier <br></br>Communications</button>
-              <button onClick={() => { handleResumeTabClick('v-pills-whataburger') }} className="nav-link" id="v-pills-whataburger-tab" data-bs-toggle="pill" data-bs-target="#v-pills-whataburger" type="button" role="tab" aria-controls="v-pills-whataburger" aria-selected="false">Whataburger</button>
+              <div className="nav flex-column nav-pills position-relative mx-5 d-none d-lg-flex" id="v-pills-tab" role="tablist" aria-orientation="vertical" >
 
-            </div>
-            <div className="tab-content position-relative" id="v-pills-tabContent" style={{ opacity: `${resumeTransition ? "0" : "1"}` }}>
-              <div className="tab-pane fade show active position-relative" id="v-pills-verizon" role="tabpanel" aria-labelledby="v-pills-verizon-tab">
-                <ResumeContent
-                  title={"Data Analyst"}
-                  location={"Verizon-Remote"}
-                  duration={"March 2023 to December 2024"}
-                  description={`Incedo Inc. is a digital transformation and consulting company that provides services in data science,
+                <button onClick={() => { handleResumeTabClick('v-pills-verizon') }} className="nav-link active" id="v-pills-verizon-tab" data-bs-toggle="pill" data-bs-target="#v-pills-verizon" type="button" role="tab" aria-controls="v-pills-verizon" aria-selected="true">Verizon</button>
+                <button onClick={() => { handleResumeTabClick('v-pills-starry') }} className="nav-link" id="v-pills-starry-tab" data-bs-toggle="pill" data-bs-target="#v-pills-starry" type="button" role="tab" aria-controls="v-pills-starry" aria-selected="false">Starry, Inc.</button>
+                <button onClick={() => { handleResumeTabClick('v-pills-apple') }} className="nav-link" id="v-pills-apple-tab" data-bs-toggle="pill" data-bs-target="#v-pills-apple" type="button" role="tab" aria-controls="v-pills-apple" aria-selected="false">Apple</button>
+                <button onClick={() => { handleResumeTabClick('v-pills-frontier') }} className="nav-link" id="v-pills-frontier-tab" data-bs-toggle="pill" data-bs-target="#v-pills-frontier" type="button" role="tab" aria-controls="v-pills-frontier" aria-selected="false">Frontier <br></br>Communications</button>
+                <button onClick={() => { handleResumeTabClick('v-pills-whataburger') }} className="nav-link" id="v-pills-whataburger-tab" data-bs-toggle="pill" data-bs-target="#v-pills-whataburger" type="button" role="tab" aria-controls="v-pills-whataburger" aria-selected="false">Whataburger</button>
+
+              </div>
+              <div className="tab-content position-relative" id="v-pills-tabContent" style={{ opacity: `${resumeTransition ? "0" : "1"}` }}>
+                <div className="tab-pane fade show active position-relative" id="v-pills-verizon" role="tabpanel" aria-labelledby="v-pills-verizon-tab">
+                  <ResumeContent
+                    title={"Data Analyst"}
+                    location={"Verizon-Remote"}
+                    duration={"March 2023 to December 2024"}
+                    description={`Incedo Inc. is a digital transformation and consulting company that provides services in data science,
 analytics, and technology. It partners with clients across industries such as financial services, life
 sciences, and telecommunications to deliver innovative solutions and drive sustainable business growth.
 Within this role, I served as a member of a triage team (contract role) at a major wireless phone company,
@@ -734,16 +775,16 @@ Script where applicable.
 dynamic data-driven tools.
 • Communicated with team members to efficiently address issues out of my scope of support.
 `}
-                  rod={'Layoff; Company-wide contract ended'}
-                  subcontractor={"Incedo, Inc."}
-                />
-              </div>
-              <div className="tab-pane fade" id="v-pills-starry" role="tabpanel" aria-labelledby="v-pills-starry-tab">
-                <ResumeContent
-                  title={"Customer/Technical Support"}
-                  location={"Starry, Inc.-Remote"}
-                  duration={"July 2022 to January 2023"}
-                  description={`Starry Internet is a fixed wireless broadband Internet service provider that uses millimeter-band LMDS
+                    rod={'Layoff; Company-wide contract ended'}
+                    subcontractor={"Incedo, Inc."}
+                  />
+                </div>
+                <div className="tab-pane fade" id="v-pills-starry" role="tabpanel" aria-labelledby="v-pills-starry-tab">
+                  <ResumeContent
+                    title={"Customer/Technical Support"}
+                    location={"Starry, Inc.-Remote"}
+                    duration={"July 2022 to January 2023"}
+                    description={`Starry Internet is a fixed wireless broadband Internet service provider that uses millimeter-band LMDS
 connections to connect its base stations to customer buildings.
 In this role, we assisted customers accordingly via either phone, email, or live chat. Here, we worked in
 different areas including, but not limited to, retention, technical support, upselling, billing, and booking
@@ -757,17 +798,17 @@ subscribers account's team, and the senior advisors' team.
 respective supervisors to diffuse scenarios.
 • Helping customers understand their bills and any questions of which may entail.
 `}
-                  rod={'Layoff due to company bankrupcy'}
-                  subcontractor={null}
-                />
-              </div>
+                    rod={'Layoff due to company bankrupcy'}
+                    subcontractor={null}
+                  />
+                </div>
 
-              <div className="tab-pane fade" id="v-pills-apple" role="tabpanel" aria-labelledby="v-pills-apple-tab">
-                <ResumeContent
-                  title={"Customer/Technical Support"}
-                  location={"Apple-Remote"}
-                  duration={"March 2022 to July 2022"}
-                  description={`Majorel is an international company that outsources employees, specializing in the customer/business
+                <div className="tab-pane fade" id="v-pills-apple" role="tabpanel" aria-labelledby="v-pills-apple-tab">
+                  <ResumeContent
+                    title={"Customer/Technical Support"}
+                    location={"Apple-Remote"}
+                    duration={"March 2022 to July 2022"}
+                    description={`Majorel is an international company that outsources employees, specializing in the customer/business
 experience sector.
 As for my role, I worked under one of the biggest tech companies in the world, although I'm not able to
 disclose which. Some of my tasks involved:
@@ -778,17 +819,17 @@ disclose which. Some of my tasks involved:
 summary would be written under the customer's account.
 • Cold/warm transferring to other departments when necessary, or when the issue was out of my scope of support.
 `}
-                  rod={'Received better economic opportunity; lack of management'}
-                  subcontractor={"Majorel"}
-                />
-              </div>
+                    rod={'Received better economic opportunity; lack of management'}
+                    subcontractor={"Majorel"}
+                  />
+                </div>
 
-              <div className="tab-pane fade" id="v-pills-frontier" role="tabpanel" aria-labelledby="v-pills-frontier-tab">
-                <ResumeContent
-                  title={"Customer Service Representative"}
-                  location={"Frontier Communications-Remote"}
-                  duration={"July 2021 to March 2022"}
-                  description={`Although OneSupport (previously TeleNetwork, to avoid confusion) has different business sectors, the
+                <div className="tab-pane fade" id="v-pills-frontier" role="tabpanel" aria-labelledby="v-pills-frontier-tab">
+                  <ResumeContent
+                    title={"Customer Service Representative"}
+                    location={"Frontier Communications-Remote"}
+                    duration={"July 2021 to March 2022"}
+                    description={`Although OneSupport (previously TeleNetwork, to avoid confusion) has different business sectors, the
 sector I was in in dealt with being subcontractors for other companies. In my case, I was under a contract
 for Frontier Communications. Frontier Communications is a telecommunications company that offers
 internet, landline, and previously TV services. In here, our role as customer service representatives
@@ -801,16 +842,16 @@ among other issues.
 • Working with internal departments (technical support, collections, sales, etc) and redirecting customers based on their concerns.
 It does go to mention it is not uncommon for us to work with upset customers here and there, many of which resort to foul language and insults. Alongside my previous job, I have become fairly familiar with diffusion methods.
 `}
-                  rod={'Received better economic opportunity; left after 2 weeks notice'}
-                  subcontractor={"OneSupport"}
-                /></div>
+                    rod={'Received better economic opportunity; left after 2 weeks notice'}
+                    subcontractor={"OneSupport"}
+                  /></div>
 
-              <div className="tab-pane fade" id="v-pills-whataburger" role="tabpanel" aria-labelledby="v-pills-whataburger-tab">
-                <ResumeContent
-                  title={"Team Member"}
-                  location={"Whataburger-Brownsville, TX"}
-                  duration={"June 2020 to October 2021"}
-                  description={`In this role, I gained valuable experience in a fast-paced, customer-focused environment by taking on
+                <div className="tab-pane fade" id="v-pills-whataburger" role="tabpanel" aria-labelledby="v-pills-whataburger-tab">
+                  <ResumeContent
+                    title={"Team Member"}
+                    location={"Whataburger-Brownsville, TX"}
+                    duration={"June 2020 to October 2021"}
+                    description={`In this role, I gained valuable experience in a fast-paced, customer-focused environment by taking on
 diverse responsibilities across multiple stations, including:
 • Drive-thru order taking and cashier operations, ensuring prompt and accurate service to a high volume
 of customers daily.
@@ -823,17 +864,19 @@ adaptability and strong communication skills.
 • Provided maintenance and inventory support, contributing to the overall efficiency and cleanliness of the workplace.
 This role honed my ability to thrive under pressure, build rapport with diverse individuals, and maintain a focus on excellence in service delivery.
 `}
-                  rod={'Received better economic opportunity; left after 2 weeks notice'}
-                  subcontractor={null}
-                />
+                    rod={'Received better economic opportunity; left after 2 weeks notice'}
+                    subcontractor={null}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
-
       </Container>
 
       <Container ref={portfolioRef} id="portfolioSection" className="px-auto responsive-width" fluid style={{ backgroundColor: `${colorBlack}` }}>
+      <div className={isPortfolioVisible ? "" : "anim-slide-right"} style={{ transition: "all 1s ease" }}>
+
         <h1 className="display-1 text-white my-5">Portfolio</h1>
 
         <div className="d-flex  pb-4 position-relative portfolio-content-layout" style={{ minHeight: "fit-content", maxHeight: "75vh" }}>
@@ -852,8 +895,11 @@ This role honed my ability to thrive under pressure, build rapport with diverse 
             sendURL={setRequestedURL}
           />
         </div>
+        </div>
       </Container>
       <Container ref={contactRef} id="contactSection" className="px-auto responsive-width" fluid style={{ backgroundColor: `${colorBlack}`, minHeight: "100vh" }}>
+      <div className={isContactVisible ? "" : "anim-slide-left"} style={{ transition: "all 1s ease" }}>
+
         <div className="w-100 d-flex flex-column justify-content-center" style={{ height: "11rem" }}>
           <h1 className="display-1 text-white w-100 text-end">Contact</h1>
           <h5 className="text-white w-100 text-end fw-light fst-italic">Let's get in touch!</h5>
@@ -1058,6 +1104,7 @@ This role honed my ability to thrive under pressure, build rapport with diverse 
             </Button>
           </Form>
 
+        </div>
         </div>
       </Container>
 
